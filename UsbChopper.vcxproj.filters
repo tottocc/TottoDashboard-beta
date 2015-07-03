@@ -58,5 +58,11 @@
     <None Include="README.md">
       <Filter>Readme</Filter>
     </None>
+    <None Include="src\wxForm.fbp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\makefile">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

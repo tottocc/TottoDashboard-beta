@@ -93,6 +93,8 @@
   <ItemGroup>
     <None Include="LICENSE" />
     <None Include="README.md" />
+    <None Include="src\makefile" />
+    <None Include="src\wxForm.fbp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

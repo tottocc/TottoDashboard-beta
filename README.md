@@ -17,4 +17,4 @@ WxWidgets
 
 ## Author
 
-[totto](https://github.com/tottocc)
+[totto developer](https://github.com/tottocc)
