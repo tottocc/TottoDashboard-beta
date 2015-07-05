@@ -107,12 +107,9 @@ void MyMainFrame::ChopperCtrlPort(unsigned int ch, bool on)
 		sprintf(buf, "usb dis %d\r\n", ch);
 	}
 	_serial.Send((BYTE *)buf, strlen(buf));
-	Sleep(10);
+	msleep(10);
 	while (_serial.RecvLength())
 	{
 		_serial.Recv((BYTE *)buf, _serial.RecvLength());
 	}
 }
-
-
-
