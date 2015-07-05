@@ -12,7 +12,7 @@ using namespace std;
 /// local variable/function prototype
 ///////////////////////////////////////////////////////////////////////////////
 
-/* ŠÖ”ƒvƒƒgƒ^ƒCƒv */
+/* ï¿½Öï¿½ï¿½vï¿½ï¿½ï¿½gï¿½^ï¿½Cï¿½v */
 serial_t serial_create(char *pname, unsigned int baud);
 void serial_delete(serial_t obj);
 unsigned int serial_send(serial_t obj, const BYTE *buf, unsigned int size);
@@ -75,13 +75,13 @@ unsigned int Serial::RecvLength()
 /// local function
 ///////////////////////////////////////////////////////////////////////////////
 
-/* 1‚Â‚ÌƒVƒŠƒAƒ‹’ÊM‚ÉŠÖ‚·‚éƒf[ƒ^\‘¢ */
+/* 1ï¿½Â‚ÌƒVï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ÊMï¿½ÉŠÖ‚ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ */
 struct _TAG_SERIAL {
-	// ’ÊMŠÖŒW
+	// ï¿½ÊMï¿½ÖŒW
 	HANDLE handle;
 	DCB dcb;
 
-	// ƒXƒŒƒbƒh‚ÉŠÖ‚µ‚Ä
+	// ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ÉŠÖ‚ï¿½ï¿½ï¿½
 	HANDLE thread_handle;
 	DWORD thread_id;
 	BOOL thread_active;
@@ -92,15 +92,15 @@ struct _TAG_SERIAL {
 	fifo_t *q_recv;
 	fifo_t *q_send;
 
-	// ‚»‚Ì‘¼
+	// ï¿½ï¿½ï¿½Ì‘ï¿½
 	char *pname;
 	char *msg;
 };
 
-/* ƒvƒƒgƒ^ƒCƒv */
+/* ï¿½vï¿½ï¿½ï¿½gï¿½^ï¿½Cï¿½v */
 DWORD WINAPI serial_thread(LPVOID param);
 
-/* 1ŽŸƒoƒbƒtƒ@ */
+/* 1ï¿½ï¿½ï¿½oï¿½bï¿½tï¿½@ */
 #define SERIAL_TMP_BUFSIZE	128
 
 serial_t serial_create(char *pname, unsigned int baud)
@@ -108,20 +108,20 @@ serial_t serial_create(char *pname, unsigned int baud)
 	serial_t obj;
 	COMMTIMEOUTS timeout;
 
-	// ƒCƒ“ƒXƒ^ƒ“ƒXƒƒ‚ƒŠŠm•Û
+	// ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
 	obj = (serial_t)malloc(sizeof(struct _TAG_SERIAL));
 	if (obj == NULL) return NULL;
 	ZeroMemory(obj, sizeof(struct _TAG_SERIAL));
 	obj->pname = pname;
 
-	// COMƒ|[ƒg‚Ìƒnƒ“ƒhƒ‹‚ðŽæ“¾
+	// COMï¿½|ï¿½[ï¿½gï¿½Ìƒnï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 	obj->handle = CreateFile(pname, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL/*|FILE_FLAG_OVERLAPPED*/, NULL);
 	if (obj->handle == INVALID_HANDLE_VALUE) {
 		free(obj);
 		return NULL;
 	}
 
-	// COMƒ|[ƒg‚Ì’ÊMÝ’è
+	// COMï¿½|ï¿½[ï¿½gï¿½Ì’ÊMï¿½Ý’ï¿½
 	GetCommState(obj->handle, &obj->dcb);
 	obj->dcb.BaudRate = baud;
 	if (SetCommState(obj->handle, &obj->dcb) == FALSE) {
@@ -129,7 +129,7 @@ serial_t serial_create(char *pname, unsigned int baud)
 		return NULL;
 	}
 
-	// COMƒ|[ƒg‚Ìƒ^ƒCƒ€ƒAƒEƒgÝ’è
+	// COMï¿½|ï¿½[ï¿½gï¿½Ìƒ^ï¿½Cï¿½ï¿½ï¿½Aï¿½Eï¿½gï¿½Ý’ï¿½
 	ZeroMemory(&timeout, sizeof(COMMTIMEOUTS));
 	timeout.ReadIntervalTimeout = MAXDWORD;
 	if (SetCommTimeouts(obj->handle, &timeout) == FALSE) {
@@ -137,7 +137,7 @@ serial_t serial_create(char *pname, unsigned int baud)
 		return NULL;
 	}
 
-	// FIFOƒƒ‚ƒŠŠm•Û
+	// FIFOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½
 	obj->q_send = fifo_create();
 	obj->q_recv = fifo_create();
 	if (obj->q_send == NULL || obj->q_recv == NULL) {
@@ -147,7 +147,7 @@ serial_t serial_create(char *pname, unsigned int baud)
 		return NULL;
 	}
 
-	// ƒXƒŒƒbƒhŠJŽn
+	// ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½Jï¿½n
 	InitializeCriticalSection(&obj->cs_recv);
 	InitializeCriticalSection(&obj->cs_send);
 	obj->thread_active = TRUE;
@@ -168,7 +168,7 @@ void serial_delete(serial_t obj)
 {
 	DWORD thread_state;
 
-	// ƒXƒŒƒbƒh‚ð’âŽ~
+	// ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½~
 	obj->thread_active = FALSE;
 	do {
 		Sleep(1);
@@ -177,10 +177,10 @@ void serial_delete(serial_t obj)
 	DeleteCriticalSection(&obj->cs_send);
 	DeleteCriticalSection(&obj->cs_recv);
 
-	// ’ÊMƒ|[ƒg‚ð•Â‚¶‚é
+	// ï¿½ÊMï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½
 	CloseHandle(obj->handle);
 
-	// ƒƒ‚ƒŠ[—Ìˆæ‚Ì‰ð•ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Ìˆï¿½ï¿½Ì‰ï¿½ï¿½ï¿½
 	fifo_delete(obj->q_send);
 	fifo_delete(obj->q_recv);
 	free(obj);
@@ -198,7 +198,7 @@ DWORD WINAPI serial_thread(LPVOID param)
 	BOOL send_hold = FALSE;
 
 	while (obj->thread_active) {
-		// ŽóM
+		// ï¿½ï¿½ï¿½M
 		if (recv_hold == FALSE) {
 			ret = ReadFile(obj->handle, recv_buf, sizeof(recv_buf), &recv_len, NULL);
 			if (ret == FALSE) {
@@ -214,7 +214,7 @@ DWORD WINAPI serial_thread(LPVOID param)
 			recv_hold = FALSE;
 		}
 
-		// ‘—M
+		// ï¿½ï¿½ï¿½M
 		if (send_hold) {
 			ret = WriteFile(obj->handle, send_buf, send_size, &send_len, NULL);
 			if (ret == FALSE) {
