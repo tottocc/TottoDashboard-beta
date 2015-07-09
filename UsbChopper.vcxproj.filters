@@ -61,7 +61,7 @@
     <None Include="src\wxForm.fbp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="src\makefile">
+    <None Include="src\makefile.mingw">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
