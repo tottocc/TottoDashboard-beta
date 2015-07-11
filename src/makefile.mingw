@@ -1,13 +1,13 @@
 CXX = $(shell wx-config --cxx)
 WX-CONFIG_CXXFLAGS = $(shell wx-config --cxxflags)
-WX-CONFIG_LIBS	= $(shell wx-config --libs)
+WX-CONFIG_LIBS	= $(shell wx-config --libs) -lsetupapi
 
 OBJDIR = ../obj
 BINDIR = ../bin
 
 PROGRAM	= $(BINDIR)/UsbChopper.exe
 # Compile except source files for linux, mac
-SOURCES = $(filter-out Serial_linux.cpp, $(wildcard *.cpp))
+SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_linux.cpp, $(wildcard serial/*.cpp))
 OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))
 
 # implementation
@@ -16,6 +16,7 @@ OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))
 
 $(OBJDIR)/%.o : %.cpp
 	@[ -d $(OBJDIR) ] || mkdir -p $(OBJDIR)
+	@[ -d $(OBJDIR)/serial ] || mkdir -p $(OBJDIR)/serial
 	$(CXX) -c $(WX-CONFIG_CXXFLAGS) -o $@ $<
 
 all: $(PROGRAM)

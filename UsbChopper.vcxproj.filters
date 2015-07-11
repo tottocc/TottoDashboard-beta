@@ -16,39 +16,45 @@
     <Filter Include="Readme">
       <UniqueIdentifier>{61754fce-ea52-4c63-950c-cf40e34c8059}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\serial">
+      <UniqueIdentifier>{103f749f-3440-4f47-8936-66a45b6be6aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\serial">
+      <UniqueIdentifier>{14843624-5b5f-4fec-b945-1770f543e9d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\fifo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MyMainFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Serial_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\wxForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\serial\fifo.cpp">
+      <Filter>Source Files\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\Serial_win.cpp">
+      <Filter>Source Files\serial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\fifo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MyMainFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Serial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\wxForm.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\Serial.h">
+      <Filter>Header Files\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\fifo.h">
+      <Filter>Header Files\serial</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

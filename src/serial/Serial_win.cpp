@@ -3,10 +3,21 @@
 #include "fifo.h"
 #include "Serial.h"
 #include <string>
+#include <tchar.h>
+#include <stdio.h>
 using namespace std;
+
+
+// Required to get device informmation
+#include <devguid.h>
+#include <regstr.h>
+#include <setupapi.h>
+#pragma	comment(lib,"setupapi.lib")
 
 // Based on the following URL:
 // http://d.hatena.ne.jp/udp_ip/20110401/1301677438
+// http://ttssh2.osdn.jp/manual/ja/reference/sourcecode.html
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// local variable/function prototype
@@ -32,17 +43,111 @@ Serial::~Serial()
 {
 }
 
-bool Serial::Create(const char *comname, unsigned int baud)
+unsigned int Serial::UpdateComPortList()
 {
-	// Set port name
-	char *p = _pnamestr;
-	*p++ = '\\';
-	*p++ = '\\';
-	*p++ = '.';
-	*p++ = '\\';
-	while (*p++ = *comname++) {};
+	GUID ClassGuid[1];
+	DWORD dwRequiredSize;
+	BOOL bRet;
+	HDEVINFO DeviceInfoSet = NULL;
+	SP_DEVINFO_DATA DeviceInfoData;
+	DWORD dwMemberIndex = 0;
+	int i;
 
-	_serial_obj = serial_create(_pnamestr, baud);
+	DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    // Initialize list
+	 for (i = 0; i < _comPortNum; i++) {
+		free(_comPortDescList[i]);
+		_comPortDescList[i] = NULL;
+	}
+	_comPortNum = 0;
+
+	bRet =
+		SetupDiClassGuidsFromName(_T("PORTS"), (LPGUID)& ClassGuid, 1,
+		&dwRequiredSize);
+	if (!bRet) {
+		goto cleanup;
+	}
+
+	DeviceInfoSet =
+		SetupDiGetClassDevs(&ClassGuid[0], NULL, NULL, DIGCF_PRESENT | DIGCF_PROFILE);
+
+	if (DeviceInfoSet) {
+		dwMemberIndex = 0;
+		while (SetupDiEnumDeviceInfo
+			(DeviceInfoSet, dwMemberIndex++, &DeviceInfoData)) {
+			TCHAR szFriendlyName[MAX_PATH];
+			TCHAR szPortName[MAX_PATH];
+			DWORD dwReqSize = 0;
+			DWORD dwPropType;
+			DWORD dwType = REG_SZ;
+			HKEY hKey = NULL;
+
+			bRet = SetupDiGetDeviceRegistryProperty(DeviceInfoSet,
+				&DeviceInfoData,
+				SPDRP_FRIENDLYNAME,
+				&dwPropType,
+				(LPBYTE)
+				szFriendlyName,
+				sizeof(szFriendlyName),
+				&dwReqSize);
+
+			hKey = SetupDiOpenDevRegKey(DeviceInfoSet,
+				&DeviceInfoData,
+				DICS_FLAG_GLOBAL,
+				0, DIREG_DEV, KEY_READ);
+			if (hKey) {
+				long lRet;
+				dwReqSize = sizeof(szPortName);
+				lRet = RegQueryValueEx(hKey,
+					_T("PortName"),
+					0,
+					&dwType,
+					(LPBYTE)& szPortName,
+					&dwReqSize);
+				RegCloseKey(hKey);
+			}
+
+			if (_strnicmp(szPortName, "COM", 3) == 0) {  // Find COM port driver
+				_comPortNumList[_comPortNum] = atoi(&szPortName[3]);
+				_comPortDescList[_comPortNum] = _strdup(szFriendlyName);
+				_comPortNum++;
+			}
+		}
+	}
+
+cleanup:
+	SetupDiDestroyDeviceInfoList(DeviceInfoSet);
+	
+	return _comPortNum;
+}
+
+
+unsigned int Serial::GetComPortNum(unsigned int num)
+{
+	if (num >= _comPortNum)
+		return 0;
+	return _comPortNumList[num];
+}
+
+
+char *Serial::GetComPortDesc(unsigned int num)
+{
+	if (num >= _comPortNum)
+		return NULL;
+	return _comPortDescList[num];
+}
+
+
+bool Serial::Create(unsigned int num, unsigned int baud)
+{
+	char comname[11];
+#ifdef __GNUC__
+	sprintf(comname, "\\\\.\\COM%d", GetComPortNum(num));
+#else
+	sprintf_s(comname, "\\\\.\\COM%d", GetComPortNum(num));
+#endif
+	_serial_obj = serial_create(comname, baud);
 	return _serial_obj != NULL;
 }
 

@@ -11,7 +11,7 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/string.h>
-#include <wx/textctrl.h>
+#include <wx/combobox.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
@@ -33,7 +33,7 @@ class MainFrame : public wxFrame
 	
 	protected:
 		wxPanel* m_panel1;
-		wxTextCtrl* m_textCtrl1;
+		wxComboBox* m_comboBoxCom;
 		wxButton* m_buttonCom;
 		wxPanel* m_panel2;
 		wxButton* m_button1;
@@ -41,6 +41,7 @@ class MainFrame : public wxFrame
 		wxButton* m_button3;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void comboBoxComDropDown(wxCommandEvent& event) { event.Skip(); }
 		virtual void btnOpenComClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void btn1Click( wxCommandEvent& event ) { event.Skip(); }
 		virtual void btn2Click( wxCommandEvent& event ) { event.Skip(); }

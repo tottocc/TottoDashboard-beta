@@ -18,10 +18,15 @@ MainFrame::MainFrame( wxWindow* parent, wxWindowID id, const wxString& title, co
 	
 	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxGridSizer* gSizer1;
-	gSizer1 = new wxGridSizer( 1, 2, 0, 0 );
+	gSizer1 = new wxGridSizer( 1, 3, 0, 0 );
 	
-	m_textCtrl1 = new wxTextCtrl( m_panel1, wxID_ANY, wxT("COMxx"), wxDefaultPosition, wxDefaultSize, 0 );
-	gSizer1->Add( m_textCtrl1, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_comboBoxCom = new wxComboBox( m_panel1, wxID_ANY, wxT("No COM Port"), wxPoint( -1,-1 ), wxSize( 170,-1 ), 0, NULL, 0 ); 
+	m_comboBoxCom->SetMaxSize( wxSize( 170,-1 ) );
+	
+	gSizer1->Add( m_comboBoxCom, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	
+	gSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
 	
 	m_buttonCom = new wxButton( m_panel1, wxID_ANY, wxT("Open"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer1->Add( m_buttonCom, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -67,6 +72,7 @@ MainFrame::MainFrame( wxWindow* parent, wxWindowID id, const wxString& title, co
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+	m_comboBoxCom->Connect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(MainFrame::comboBoxComDropDown), NULL, this);
 	m_buttonCom->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainFrame::btnOpenComClick ), NULL, this );
 	m_button1->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainFrame::btn1Click ), NULL, this );
 	m_button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainFrame::btn2Click ), NULL, this );
@@ -76,6 +82,7 @@ MainFrame::MainFrame( wxWindow* parent, wxWindowID id, const wxString& title, co
 MainFrame::~MainFrame()
 {
 	// Disconnect Events
+	m_comboBoxCom->Disconnect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(MainFrame::comboBoxComDropDown), NULL, this);
 	m_buttonCom->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainFrame::btnOpenComClick ), NULL, this );
 	m_button1->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainFrame::btn1Click ), NULL, this );
 	m_button2->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainFrame::btn2Click ), NULL, this );

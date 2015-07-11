@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <wx/colour.h>
 
+#include <string>
+using namespace std;
 
 #define ON_STATE_COLOUR  wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)
 #define OFF_STATE_COLOUR wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE)
@@ -19,20 +21,38 @@ MyMainFrame::MyMainFrame(wxWindow* parent)
 	:
 	MainFrame(parent)
 {
+	// Update com port list
+	unsigned int num = _serial.UpdateComPortList();
+	for (int i = 0; i<num; i++) {
+		m_comboBoxCom->Append(_serial.GetComPortDesc(i));
+	}
+	if (num > 0) {
+		m_comboBoxCom->SetSelection(0);
+		m_comboBoxCom->SetStringSelection(m_comboBoxCom->GetStringSelection());
+	}
+}
 
+void MyMainFrame::comboBoxComDropDown(wxCommandEvent& event)
+{
+	// Update com port list
+	m_comboBoxCom->Clear();
+	unsigned int num = _serial.UpdateComPortList();
+	for (int i = 0; i<num; i++) {
+		m_comboBoxCom->Append(_serial.GetComPortDesc(i));
+	}
 }
 
 void MyMainFrame::btnOpenComClick(wxCommandEvent& event)
 {
 	// TODO: Implement btnOpenComClick
 	if (m_buttonCom->GetLabel() == "Open") {
-		if (!_serial.Create(m_textCtrl1->GetLineText(1).mbc_str(), 115200))
+		if (!_serial.Create(m_comboBoxCom->GetSelection(), 115200))
 		{
 			fprintf(stderr, "Fail to open COM port");
 			fprintf(stdout, "Fail to open COM port");
 			return;
 		}
-		m_textCtrl1->Enable(false);
+		m_comboBoxCom->Enable(false);
 		m_button1->Enable(true);
 		m_button2->Enable(true);
 		m_button3->Enable(true);
@@ -49,7 +69,7 @@ void MyMainFrame::btnOpenComClick(wxCommandEvent& event)
 		m_button1->Enable(false);
 		m_button2->Enable(false);
 		m_button3->Enable(false);
-		m_textCtrl1->Enable(true);
+		m_comboBoxCom->Enable(true);
 		m_buttonCom->SetLabel(wxT("Open"));
 	}
 }

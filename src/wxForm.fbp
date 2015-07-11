@@ -172,7 +172,7 @@
                         <event name="OnSize"></event>
                         <event name="OnUpdateUI"></event>
                         <object class="wxGridSizer" expanded="1">
-                            <property name="cols">2</property>
+                            <property name="cols">3</property>
                             <property name="hgap">0</property>
                             <property name="minimum_size"></property>
                             <property name="name">gSizer1</property>
@@ -181,9 +181,9 @@
                             <property name="vgap">0</property>
                             <object class="sizeritem" expanded="1">
                                 <property name="border">5</property>
-                                <property name="flag">wxALIGN_CENTER|wxALL</property>
-                                <property name="proportion">0</property>
-                                <object class="wxTextCtrl" expanded="1">
+                                <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
+                                <property name="proportion">1</property>
+                                <object class="wxComboBox" expanded="1">
                                     <property name="BottomDockable">1</property>
                                     <property name="LeftDockable">1</property>
                                     <property name="RightDockable">1</property>
@@ -197,6 +197,7 @@
                                     <property name="caption"></property>
                                     <property name="caption_visible">1</property>
                                     <property name="center_pane">0</property>
+                                    <property name="choices"></property>
                                     <property name="close_button">1</property>
                                     <property name="context_help"></property>
                                     <property name="context_menu">1</property>
@@ -213,22 +214,22 @@
                                     <property name="id">wxID_ANY</property>
                                     <property name="max_size"></property>
                                     <property name="maximize_button">0</property>
-                                    <property name="maximum_size"></property>
-                                    <property name="maxlength"></property>
+                                    <property name="maximum_size">170,-1</property>
                                     <property name="min_size"></property>
                                     <property name="minimize_button">0</property>
                                     <property name="minimum_size"></property>
                                     <property name="moveable">1</property>
-                                    <property name="name">m_textCtrl1</property>
+                                    <property name="name">m_comboBoxCom</property>
                                     <property name="pane_border">1</property>
                                     <property name="pane_position"></property>
                                     <property name="pane_size"></property>
                                     <property name="permission">protected</property>
                                     <property name="pin_button">1</property>
-                                    <property name="pos"></property>
+                                    <property name="pos">-1,-1</property>
                                     <property name="resize">Resizable</property>
+                                    <property name="selection">-1</property>
                                     <property name="show">1</property>
-                                    <property name="size"></property>
+                                    <property name="size">170,-1</property>
                                     <property name="style"></property>
                                     <property name="subclass"></property>
                                     <property name="toolbar_pane">0</property>
@@ -237,11 +238,12 @@
                                     <property name="validator_style">wxFILTER_NONE</property>
                                     <property name="validator_type">wxDefaultValidator</property>
                                     <property name="validator_variable"></property>
-                                    <property name="value">COMxx</property>
+                                    <property name="value">No COM Port</property>
                                     <property name="window_extra_style"></property>
                                     <property name="window_name"></property>
                                     <property name="window_style"></property>
                                     <event name="OnChar"></event>
+                                    <event name="OnCombobox"></event>
                                     <event name="OnEnterWindow"></event>
                                     <event name="OnEraseBackground"></event>
                                     <event name="OnKeyDown"></event>
@@ -265,9 +267,17 @@
                                     <event name="OnSize"></event>
                                     <event name="OnText"></event>
                                     <event name="OnTextEnter"></event>
-                                    <event name="OnTextMaxLen"></event>
-                                    <event name="OnTextURL"></event>
                                     <event name="OnUpdateUI"></event>
+                                </object>
+                            </object>
+                            <object class="sizeritem" expanded="1">
+                                <property name="border">5</property>
+                                <property name="flag">wxEXPAND</property>
+                                <property name="proportion">1</property>
+                                <object class="spacer" expanded="1">
+                                    <property name="height">0</property>
+                                    <property name="permission">protected</property>
+                                    <property name="width">0</property>
                                 </object>
                             </object>
                             <object class="sizeritem" expanded="1">

@@ -77,17 +77,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\fifo.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MyMainFrame.cpp" />
-    <ClCompile Include="src\Serial_win.cpp" />
+    <ClCompile Include="src\serial\fifo.cpp" />
+    <ClCompile Include="src\serial\Serial_win.cpp" />
     <ClCompile Include="src\wxForm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\fifo.h" />
     <ClInclude Include="src\Main.h" />
     <ClInclude Include="src\MyMainFrame.h" />
-    <ClInclude Include="src\Serial.h" />
+    <ClInclude Include="src\serial\fifo.h" />
+    <ClInclude Include="src\serial\Serial.h" />
     <ClInclude Include="src\wxForm.h" />
   </ItemGroup>
   <ItemGroup>
