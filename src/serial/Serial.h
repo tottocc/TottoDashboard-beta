@@ -18,6 +18,7 @@ public:
 	unsigned int GetComPortNum(unsigned int);
 	char *GetComPortDesc(unsigned int num);
 	bool Create(unsigned int num, unsigned int baud);
+	bool IsOpen();
 	void Delete();
 	unsigned int Send(const BYTE *buf, unsigned int size);
 	unsigned int Send(const char *buf, unsigned int size);

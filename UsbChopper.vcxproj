@@ -96,6 +96,12 @@
     <None Include="src\makefile.mingw" />
     <None Include="src\wxForm.fbp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\res\tottoIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\res\tottoIcon.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -22,6 +22,9 @@
     <Filter Include="Source Files\serial">
       <UniqueIdentifier>{14843624-5b5f-4fec-b945-1770f543e9d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{4e751b50-db48-47f5-a986-e2477a192afc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -64,11 +67,21 @@
     <None Include="README.md">
       <Filter>Readme</Filter>
     </None>
-    <None Include="src\wxForm.fbp">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="src\makefile.mingw">
-      <Filter>Resource Files</Filter>
+      <Filter>Misc</Filter>
     </None>
+    <None Include="src\wxForm.fbp">
+      <Filter>Misc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\res\tottoIcon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\res\tottoIcon.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

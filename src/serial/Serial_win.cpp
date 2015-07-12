@@ -37,10 +37,17 @@ unsigned int serial_recv_length(serial_t obj);
 
 Serial::Serial()
 {
+	_serial_obj = NULL;
 }
 
 Serial::~Serial()
 {
+	for (int i = 0; i < _comPortNum; i++) {
+		free(_comPortDescList[i]);
+		_comPortDescList[i] = NULL;
+	}
+
+	Delete();
 }
 
 unsigned int Serial::UpdateComPortList()
@@ -151,9 +158,16 @@ bool Serial::Create(unsigned int num, unsigned int baud)
 	return _serial_obj != NULL;
 }
 
+bool Serial::IsOpen()
+{
+	return _serial_obj != NULL;
+}
+
+
 void Serial::Delete()
 {
-	serial_delete(_serial_obj);
+	if(IsOpen())
+		serial_delete(_serial_obj);
 }
 
 unsigned int Serial::Send(const BYTE *buf, unsigned int size)

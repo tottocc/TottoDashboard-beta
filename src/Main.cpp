@@ -2,13 +2,14 @@
 #include "Main.h"
 #include "MyMainFrame.h"
 
-
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-	MyMainFrame *simple = new MyMainFrame(NULL);
-	simple->Show(true);
+	MyMainFrame *mainframe = new MyMainFrame(NULL);
+	mainframe->SetTitle(wxT("USB Chopper"));
+	mainframe->SetIcon(wxICON(tottoIcon));
+	mainframe->Show(true);
 
 	return true;
 }
