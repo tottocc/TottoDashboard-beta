@@ -34,18 +34,41 @@ Serial::~Serial()
 {
 }
 
-bool Serial::Create(const char *comname, unsigned int baud)
+unsigned int Serial::UpdateComPortList()
+{
+  return 0;
+}
+
+unsigned int Serial::GetComPortNum(unsigned int)
+{
+  return 0;
+}
+
+char *Serial::GetComPortDesc(unsigned int num)
+{
+  return NULL;
+}
+
+bool IsOpen()
+{
+//	return _serial_obj != NULL;
+}
+
+bool Serial::Create(unsigned int num, unsigned int baud)
 {
 	// Set port name
+/*
 	char *p = _pnamestr;
 	*p++ = '\\';
 	*p++ = '\\';
 	*p++ = '.';
 	*p++ = '\\';
 	while (*p++ = *comname++) {};
+*/
 
-	_serial_obj = serial_create(_pnamestr, baud);
-	return _serial_obj != NULL;
+//	_serial_obj = serial_create(_pnamestr, baud);
+//	return _serial_obj != NULL;
+  return 0;
 }
 
 void Serial::Delete()

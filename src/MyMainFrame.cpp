@@ -7,6 +7,11 @@
 #include <string>
 using namespace std;
 
+// the application icon for Linux and Mac-OSX
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+    #include "res/tottoIcon.xpm"
+#endif
+
 #define ON_STATE_COLOUR  wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)
 #define OFF_STATE_COLOUR wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE)
 
@@ -21,6 +26,9 @@ MyMainFrame::MyMainFrame(wxWindow* parent)
 	:
 	MainFrame(parent)
 {
+	// set the frame icon
+	SetIcon(wxICON(tottoIcon));
+
 	// Update com port list
 	unsigned int num = _serial.UpdateComPortList();
 	for (int i = 0; i<num; i++) {
