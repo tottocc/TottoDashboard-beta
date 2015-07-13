@@ -1,7 +1,7 @@
+#include "Serial.h"
+#include "fifo.h"
 #include <windows.h>
 #include <stdlib.h>
-#include "fifo.h"
-#include "Serial.h"
 #include <string>
 #include <tchar.h>
 #include <stdio.h>
@@ -18,6 +18,12 @@ using namespace std;
 // http://d.hatena.ne.jp/udp_ip/20110401/1301677438
 // http://ttssh2.osdn.jp/manual/ja/reference/sourcecode.html
 
+//
+// Macro
+//
+#ifndef __GNUC__
+#define sprintf sprintf_s
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 /// local variable/function prototype
@@ -47,7 +53,7 @@ Serial::~Serial()
 		_comPortDescList[i] = NULL;
 	}
 
-	Delete();
+	DisconnectCom();
 }
 
 unsigned int Serial::UpdateComPortList()
@@ -146,14 +152,10 @@ char *Serial::GetComPortDesc(unsigned int num)
 }
 
 
-bool Serial::Create(unsigned int num, unsigned int baud)
+bool Serial::ConnectCom(unsigned int num, unsigned int baud)
 {
 	char comname[11];
-#ifdef __GNUC__
 	sprintf(comname, "\\\\.\\COM%d", GetComPortNum(num));
-#else
-	sprintf_s(comname, "\\\\.\\COM%d", GetComPortNum(num));
-#endif
 	_serial_obj = serial_create(comname, baud);
 	return _serial_obj != NULL;
 }
@@ -164,7 +166,7 @@ bool Serial::IsOpen()
 }
 
 
-void Serial::Delete()
+void Serial::DisconnectCom()
 {
 	if (IsOpen()) {
 		serial_delete(_serial_obj);

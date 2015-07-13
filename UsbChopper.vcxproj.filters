@@ -42,6 +42,12 @@
     <ClCompile Include="src\serial\Serial_win.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
+    <ClCompile Include="src\serial\ChopperCmd.cpp">
+      <Filter>Source Files\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\CoreCmd.cpp">
+      <Filter>Source Files\serial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Main.h">
@@ -57,6 +63,12 @@
       <Filter>Header Files\serial</Filter>
     </ClInclude>
     <ClInclude Include="src\serial\fifo.h">
+      <Filter>Header Files\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\ChopperCmd.h">
+      <Filter>Header Files\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\CoreCmd.h">
       <Filter>Header Files\serial</Filter>
     </ClInclude>
   </ItemGroup>

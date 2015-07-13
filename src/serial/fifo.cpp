@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include "fifo.h"
+#include <stdlib.h>
 
 /* Create instance */
 fifo_t *fifo_create(void)
