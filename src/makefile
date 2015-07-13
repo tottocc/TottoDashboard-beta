@@ -28,6 +28,7 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJECTS)
 	@[ -d $(BINDIR) ] || mkdir -p $(BINDIR)
 	$(CXX) -o $(PROGRAM) $(OBJECTS) $(WX-CONFIG_LIBS)
+	SetFile -t APPL $(PROGRAM)
 
 clean:
 	rm -f $(OBJDIR)/*.o $(PROGRAM)
