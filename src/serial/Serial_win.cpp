@@ -166,27 +166,25 @@ bool Serial::IsOpen()
 
 void Serial::Delete()
 {
-	if(IsOpen())
+	if (IsOpen()) {
 		serial_delete(_serial_obj);
+		_serial_obj = NULL;
+	}
 }
 
 unsigned int Serial::Send(const BYTE *buf, unsigned int size)
 {
-
-	serial_send(_serial_obj, buf, size);
-	return 0;
+	return serial_send(_serial_obj, buf, size);
 }
 
 unsigned int Serial::Recv(BYTE *buf, unsigned int size)
 {
-	serial_recv(_serial_obj, buf, size);
-	return 0;
+	return serial_recv(_serial_obj, buf, size);
 }
 
 unsigned int Serial::RecvLength()
 {
-	serial_recv_length(_serial_obj);
-	return 0;
+	return serial_recv_length(_serial_obj);
 }
 
 

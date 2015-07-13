@@ -7,6 +7,8 @@
 #include <string>
 using namespace std;
 
+#include "serial/fifo.h"
+
 // the application icon for Linux and Mac-OSX
 #ifndef wxHAS_IMAGES_IN_RESOURCES
     #include "res/tottoIcon.xpm"
@@ -126,7 +128,7 @@ void MyMainFrame::btn3Click(wxCommandEvent& event)
 //
 void MyMainFrame::ChopperCtrlPort(unsigned int ch, bool on)
 {
-	char buf[256];
+	char buf[FIFO_BUFSIZE];
 
 	if (on == true) {
 		sprintf(buf, "usb en %d\r\n", ch);
