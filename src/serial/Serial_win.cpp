@@ -135,14 +135,12 @@ cleanup:
 	return _comPortNum;
 }
 
-
 unsigned int Serial::GetComPortNum(unsigned int num)
 {
 	if (num >= _comPortNum)
 		return 0;
 	return _comPortNumList[num];
 }
-
 
 char *Serial::GetComPortDesc(unsigned int num)
 {
@@ -151,6 +149,18 @@ char *Serial::GetComPortDesc(unsigned int num)
 	return _comPortDescList[num];
 }
 
+unsigned int Serial::FindComPortListIndexWithName(char *name)
+{
+	int i;
+	for (i = 0; i < _comPortNum; i++) {
+		if (strstr(_comPortDescList[i], name)) {
+			break;
+		}
+	}
+	if (i == _comPortNum)	
+		return 0;
+	return i;
+}
 
 bool Serial::ConnectCom(unsigned int num, unsigned int baud)
 {

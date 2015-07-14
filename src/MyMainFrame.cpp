@@ -31,25 +31,43 @@ MyMainFrame::MyMainFrame(wxWindow* parent)
 	// set the frame icon
 	SetIcon(wxICON(tottoIcon));
 
+	// Connect Events
+	m_comboBoxCom->Connect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(MyMainFrame::comboBoxComDropDown), NULL, this);
+
 	// Update com port list
+	UpdateChoiceComList();
+}
+
+MyMainFrame::~MyMainFrame()
+{
+	// Disconnect Events
+	m_comboBoxCom->Disconnect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(MyMainFrame::comboBoxComDropDown), NULL, this);
+}
+
+void MyMainFrame::UpdateChoiceComList()
+{
 	unsigned int num = _chopperCmd.UpdateComPortList();
-	for (int i = 0; i<num; i++) {
-		m_comboBoxCom->Append(_chopperCmd.GetComPortDesc(i));
-	}
+	m_comboBoxCom->Clear();
 	if (num > 0) {
-		m_comboBoxCom->SetSelection(0);
+		for (int i = 0; i<num; i++) {
+			m_comboBoxCom->Append(_chopperCmd.GetComPortDesc(i));
+		}
+		m_comboBoxCom->SetSelection(_chopperCmd.FindComPortListIndexWithName("USB Chopper"));
 		m_comboBoxCom->SetStringSelection(m_comboBoxCom->GetStringSelection());
+	}
+	else {
+		m_comboBoxCom->Append(wxT("No available COM port"));
+		m_comboBoxCom->SetSelection(0);
 	}
 }
 
+//
+// Event handlers
+//
 void MyMainFrame::comboBoxComDropDown(wxCommandEvent& event)
 {
 	// Update com port list
-	m_comboBoxCom->Clear();
-	unsigned int num = _chopperCmd.UpdateComPortList();
-	for (int i = 0; i<num; i++) {
-		m_comboBoxCom->Append(_chopperCmd.GetComPortDesc(i));
-	}
+	UpdateChoiceComList();
 }
 
 void MyMainFrame::btnOpenComClick(wxCommandEvent& event)

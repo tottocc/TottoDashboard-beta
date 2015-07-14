@@ -19,6 +19,7 @@
 #include <wx/button.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
+#include <wx/stattext.h>
 #include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -36,12 +37,15 @@ class MainFrame : public wxFrame
 		wxComboBox* m_comboBoxCom;
 		wxButton* m_buttonCom;
 		wxPanel* m_panel2;
+		wxStaticText* m_staticText1;
+		wxStaticText* m_staticText2;
+		wxStaticText* m_staticText3;
+		wxPanel* m_panel3;
 		wxButton* m_button1;
 		wxButton* m_button2;
 		wxButton* m_button3;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void comboBoxComDropDown(wxCommandEvent& event) { event.Skip(); }
 		virtual void btnOpenComClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void btn1Click( wxCommandEvent& event ) { event.Skip(); }
 		virtual void btn2Click( wxCommandEvent& event ) { event.Skip(); }
@@ -50,7 +54,7 @@ class MainFrame : public wxFrame
 	
 	public:
 		
-		MainFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 293,186 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		MainFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 336,155 ), long style = wxCAPTION|wxCLOSE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL );
 		
 		~MainFrame();
 	

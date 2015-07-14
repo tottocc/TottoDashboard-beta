@@ -25,6 +25,7 @@ public:
 	unsigned int UpdateComPortList();
 	unsigned int GetComPortNum(unsigned int);
 	char *GetComPortDesc(unsigned int num);
+	unsigned int FindComPortListIndexWithName(char *name);
 	bool ConnectCom(unsigned int num, unsigned int baud);
 	bool IsOpen();
 	void DisconnectCom();
