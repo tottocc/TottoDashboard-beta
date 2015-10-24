@@ -8,7 +8,7 @@ WX-CONFIG_LIBS		= $(shell ../../library/wxWidgets-3.0.2/build-cocoa-debug/wx-con
 OBJDIR = ../obj
 BINDIR = ../bin
 
-PROGRAM	= $(BINDIR)/UsbChopper
+PROGRAM	= $(BINDIR)/TottoDashboard
 # Compile except source files for windows
 SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_win.cpp, $(wildcard serial/*.cpp))
 OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))

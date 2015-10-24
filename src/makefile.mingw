@@ -5,7 +5,7 @@ WX-CONFIG_LIBS	= $(shell wx-config --libs) -lsetupapi
 OBJDIR = ../obj
 BINDIR = ../bin
 
-PROGRAM	= $(BINDIR)/UsbChopper.exe
+PROGRAM	= $(BINDIR)/TottoDashboard.exe
 # Compile except source files for linux, mac
 SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_linux.cpp, $(wildcard serial/*.cpp))
 OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))
