@@ -9,7 +9,7 @@ IMPLEMENT_APP(MyApp)
 bool MyApp::OnInit()
 {
 	MyMainFrame *mainframe = new MyMainFrame(NULL);
-	mainframe->SetTitle(wxT("USB Chopper"));
+	mainframe->SetTitle(wxT("Totto Dashboard"));
 	mainframe->Show(true);
 
 	return true;

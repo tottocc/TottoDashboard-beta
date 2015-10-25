@@ -42,10 +42,10 @@
     <ClCompile Include="src\serial\Serial_win.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
-    <ClCompile Include="src\serial\ChopperCmd.cpp">
+    <ClCompile Include="src\serial\CoreCmd.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
-    <ClCompile Include="src\serial\CoreCmd.cpp">
+    <ClCompile Include="src\serial\TottoCmd.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,10 +65,10 @@
     <ClInclude Include="src\serial\fifo.h">
       <Filter>Header Files\serial</Filter>
     </ClInclude>
-    <ClInclude Include="src\serial\ChopperCmd.h">
+    <ClInclude Include="src\serial\CoreCmd.h">
       <Filter>Header Files\serial</Filter>
     </ClInclude>
-    <ClInclude Include="src\serial\CoreCmd.h">
+    <ClInclude Include="src\serial\TottoCmd.h">
       <Filter>Header Files\serial</Filter>
     </ClInclude>
   </ItemGroup>

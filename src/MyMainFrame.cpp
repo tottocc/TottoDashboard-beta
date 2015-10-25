@@ -46,13 +46,13 @@ MyMainFrame::~MyMainFrame()
 
 void MyMainFrame::UpdateChoiceComList()
 {
-	unsigned int num = _chopperCmd.UpdateComPortList();
+	unsigned int num = _tottoCmd.UpdateComPortList();
 	m_comboBoxCom->Clear();
 	if (num > 0) {
 		for (int i = 0; i<num; i++) {
-			m_comboBoxCom->Append(_chopperCmd.GetComPortDesc(i));
+			m_comboBoxCom->Append(_tottoCmd.GetComPortDesc(i));
 		}
-		m_comboBoxCom->SetSelection(_chopperCmd.FindComPortListIndexWithName("USB Chopper"));
+		m_comboBoxCom->SetSelection(_tottoCmd.FindComPortListIndexWithName("USB Totto"));
 		m_comboBoxCom->SetStringSelection(m_comboBoxCom->GetStringSelection());
 	}
 	else {
@@ -74,7 +74,7 @@ void MyMainFrame::btnOpenComClick(wxCommandEvent& event)
 {
 	// TODO: Implement btnOpenComClick
 	if (m_buttonCom->GetLabel() == "Open") {
-		if (!_chopperCmd.ConnectCom(m_comboBoxCom->GetSelection(), 115200))
+		if (!_tottoCmd.ConnectCom(m_comboBoxCom->GetSelection(), 115200))
 		{
 			fprintf(stderr, "Fail to open COM port\r\n");
 			return;
@@ -83,16 +83,16 @@ void MyMainFrame::btnOpenComClick(wxCommandEvent& event)
 		m_button1->Enable(true);
 		m_button2->Enable(true);
 		m_button3->Enable(true);
-		_chopperCmd.CtrlPort(1, true);
-		_chopperCmd.CtrlPort(2, true);
-		_chopperCmd.CtrlPort(3, true);
+		_tottoCmd.CtrlPort(1, true);
+		_tottoCmd.CtrlPort(2, true);
+		_tottoCmd.CtrlPort(3, true);
 		m_button1->SetBackgroundColour(ON_STATE_COLOUR);
 		m_button2->SetBackgroundColour(ON_STATE_COLOUR);
 		m_button3->SetBackgroundColour(ON_STATE_COLOUR);
 		m_buttonCom->SetLabel(wxT("Close"));
 	}
 	else {
-		_chopperCmd.DisconnectCom();
+		_tottoCmd.DisconnectCom();
 		m_button1->Enable(false);
 		m_button2->Enable(false);
 		m_button3->Enable(false);
@@ -105,11 +105,11 @@ void MyMainFrame::btn1Click(wxCommandEvent& event)
 {
 	// TODO: Implement btn1Click
 	if (m_button1->GetBackgroundColour() == OFF_STATE_COLOUR) {
-		_chopperCmd.CtrlPort(1, true);
+		_tottoCmd.CtrlPort(1, true);
 		m_button1->SetBackgroundColour(ON_STATE_COLOUR);
 	}
 	else {
-		_chopperCmd.CtrlPort(1, false);
+		_tottoCmd.CtrlPort(1, false);
 		m_button1->SetBackgroundColour(OFF_STATE_COLOUR);
 	}
 }
@@ -118,11 +118,11 @@ void MyMainFrame::btn2Click(wxCommandEvent& event)
 {
 	// TODO: Implement btn2Click
 	if (m_button2->GetBackgroundColour() == OFF_STATE_COLOUR) {
-		_chopperCmd.CtrlPort(2, true);
+		_tottoCmd.CtrlPort(2, true);
 		m_button2->SetBackgroundColour(ON_STATE_COLOUR);
 	}
 	else {
-		_chopperCmd.CtrlPort(2, false);
+		_tottoCmd.CtrlPort(2, false);
 		m_button2->SetBackgroundColour(OFF_STATE_COLOUR);
 	}
 }
@@ -131,11 +131,11 @@ void MyMainFrame::btn3Click(wxCommandEvent& event)
 {
 	// TODO: Implement btn3Click
 	if (m_button3->GetBackgroundColour() == OFF_STATE_COLOUR) {
-		_chopperCmd.CtrlPort(3, true);
+		_tottoCmd.CtrlPort(3, true);
 		m_button3->SetBackgroundColour(ON_STATE_COLOUR);
 	}
 	else {
-		_chopperCmd.CtrlPort(3, false);
+		_tottoCmd.CtrlPort(3, false);
 		m_button3->SetBackgroundColour(OFF_STATE_COLOUR);
 	}
 }

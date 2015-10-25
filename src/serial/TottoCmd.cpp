@@ -1,4 +1,4 @@
-#include "ChopperCmd.h"
+#include "TottoCmd.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
@@ -12,18 +12,18 @@ using namespace std;
 #endif
 
 
-ChopperCmd::ChopperCmd()
+TottoCmd::TottoCmd()
 {
 }
 
-ChopperCmd::~ChopperCmd()
+TottoCmd::~TottoCmd()
 {
 }
 
 //
-// Control USB Chopper Port
+// Control USB Port
 //
-void ChopperCmd::CtrlPort(unsigned int ch, bool on)
+void TottoCmd::CtrlPort(unsigned int ch, bool on)
 {
 	char buf[12];
 

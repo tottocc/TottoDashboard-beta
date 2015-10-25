@@ -79,7 +79,7 @@
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MyMainFrame.cpp" />
-    <ClCompile Include="src\serial\ChopperCmd.cpp" />
+    <ClCompile Include="src\serial\TottoCmd.cpp" />
     <ClCompile Include="src\serial\CoreCmd.cpp" />
     <ClCompile Include="src\serial\fifo.cpp" />
     <ClCompile Include="src\serial\Serial_win.cpp" />
@@ -88,7 +88,7 @@
   <ItemGroup>
     <ClInclude Include="src\Main.h" />
     <ClInclude Include="src\MyMainFrame.h" />
-    <ClInclude Include="src\serial\ChopperCmd.h" />
+    <ClInclude Include="src\serial\TottoCmd.h" />
     <ClInclude Include="src\serial\CoreCmd.h" />
     <ClInclude Include="src\serial\fifo.h" />
     <ClInclude Include="src\serial\Serial.h" />
