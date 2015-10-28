@@ -1,11 +1,11 @@
-USB Chopper
+Totto Dashboard
 ====
 
 Overview
 
 ## Description
 
-USB Chopper controls connection/disconnection of USB ports
+Totto Dashboard Application
 
 ## Requirement
 

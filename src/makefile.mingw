@@ -1,6 +1,6 @@
 CXX = $(shell wx-config --cxx)
 WX-CONFIG_CXXFLAGS = $(shell wx-config --cxxflags)
-WX-CONFIG_LIBS	= $(shell wx-config --libs) -lsetupapi
+WX-CONFIG_LIBS	= $(shell wx-config --libs) $(shell wx-config --gl-libs) -lsetupapi -lopengl32 -lglu32
 
 OBJDIR = ../obj
 BINDIR = ../bin

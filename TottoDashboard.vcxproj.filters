@@ -48,6 +48,9 @@
     <ClCompile Include="src\serial\TottoCmd.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
+    <ClCompile Include="src\DashboardFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Main.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="src\serial\TottoCmd.h">
       <Filter>Header Files\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DashboardFrame.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
