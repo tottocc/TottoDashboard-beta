@@ -7,7 +7,7 @@ BINDIR = ../bin
 
 PROGRAM	= $(BINDIR)/TottoDashboard.exe
 # Compile except source files for linux, mac
-SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_linux.cpp, $(wildcard serial/*.cpp))
+SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_linux.cpp, $(wildcard serial/*.cpp)) $(wildcard GraphFrame/*.cpp)
 OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))
 
 # implementation
@@ -17,6 +17,7 @@ OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))
 $(OBJDIR)/%.o : %.cpp
 	@[ -d $(OBJDIR) ] || mkdir -p $(OBJDIR)
 	@[ -d $(OBJDIR)/serial ] || mkdir -p $(OBJDIR)/serial
+	@[ -d $(OBJDIR)/GraphFrame ] || mkdir -p $(OBJDIR)/GraphFrame
 	$(CXX) -c $(WX-CONFIG_CXXFLAGS) -o $@ $<
 
 all: $(PROGRAM)

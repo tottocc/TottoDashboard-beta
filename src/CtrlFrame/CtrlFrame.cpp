@@ -1,5 +1,5 @@
-#include "MyMainFrame.h"
-#include "serial/fifo.h"
+#include "CtrlFrame.h"
+#include "../serial/fifo.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +24,7 @@ using namespace std;
 #define msleep(X) usleep((X) * 1000)
 #endif
 
-MyMainFrame::MyMainFrame(wxWindow* parent)
+CtrlFrame::CtrlFrame(wxWindow* parent)
 	:
 	MainFrame(parent)
 {
@@ -32,19 +32,19 @@ MyMainFrame::MyMainFrame(wxWindow* parent)
 	SetIcon(wxICON(tottoIcon));
 
 	// Connect Events
-	m_comboBoxCom->Connect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(MyMainFrame::comboBoxComDropDown), NULL, this);
+	m_comboBoxCom->Connect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(CtrlFrame::comboBoxComDropDown), NULL, this);
 
 	// Update com port list
 	UpdateChoiceComList();
 }
 
-MyMainFrame::~MyMainFrame()
+CtrlFrame::~CtrlFrame()
 {
 	// Disconnect Events
-	m_comboBoxCom->Disconnect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(MyMainFrame::comboBoxComDropDown), NULL, this);
+	m_comboBoxCom->Disconnect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(CtrlFrame::comboBoxComDropDown), NULL, this);
 }
 
-void MyMainFrame::UpdateChoiceComList()
+void CtrlFrame::UpdateChoiceComList()
 {
 	unsigned int num = _tottoCmd.UpdateComPortList();
 	m_comboBoxCom->Clear();
@@ -64,13 +64,13 @@ void MyMainFrame::UpdateChoiceComList()
 //
 // Event handlers
 //
-void MyMainFrame::comboBoxComDropDown(wxCommandEvent& event)
+void CtrlFrame::comboBoxComDropDown(wxCommandEvent& event)
 {
 	// Update com port list
 	UpdateChoiceComList();
 }
 
-void MyMainFrame::btnOpenComClick(wxCommandEvent& event)
+void CtrlFrame::btnOpenComClick(wxCommandEvent& event)
 {
 	// TODO: Implement btnOpenComClick
 	if (m_buttonCom->GetLabel() == "Open") {
@@ -101,7 +101,7 @@ void MyMainFrame::btnOpenComClick(wxCommandEvent& event)
 	}
 }
 
-void MyMainFrame::btn1Click(wxCommandEvent& event)
+void CtrlFrame::btn1Click(wxCommandEvent& event)
 {
 	// TODO: Implement btn1Click
 	if (m_button1->GetBackgroundColour() == OFF_STATE_COLOUR) {
@@ -114,7 +114,7 @@ void MyMainFrame::btn1Click(wxCommandEvent& event)
 	}
 }
 
-void MyMainFrame::btn2Click(wxCommandEvent& event)
+void CtrlFrame::btn2Click(wxCommandEvent& event)
 {
 	// TODO: Implement btn2Click
 	if (m_button2->GetBackgroundColour() == OFF_STATE_COLOUR) {
@@ -127,7 +127,7 @@ void MyMainFrame::btn2Click(wxCommandEvent& event)
 	}
 }
 
-void MyMainFrame::btn3Click(wxCommandEvent& event)
+void CtrlFrame::btn3Click(wxCommandEvent& event)
 {
 	// TODO: Implement btn3Click
 	if (m_button3->GetBackgroundColour() == OFF_STATE_COLOUR) {

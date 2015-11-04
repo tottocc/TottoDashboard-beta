@@ -25,15 +25,24 @@
     <Filter Include="Misc">
       <UniqueIdentifier>{4e751b50-db48-47f5-a986-e2477a192afc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GraphFrame">
+      <UniqueIdentifier>{45a2503f-5993-4d10-a335-5dd62f11443f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphFrame">
+      <UniqueIdentifier>{ad8acbec-a2d1-4612-8f06-4c9cc72b6bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CtrlFrame">
+      <UniqueIdentifier>{fb493e1e-8bf7-41b0-badd-c87c4714a159}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CtrlFrame">
+      <UniqueIdentifier>{ab7f5d16-706a-4bf6-aee7-d409ece68007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc\GraphFrame">
+      <UniqueIdentifier>{d7d8516a-e50f-40f2-9c49-045b07a5c15f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MyMainFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\wxForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\serial\fifo.cpp">
@@ -48,18 +57,24 @@
     <ClCompile Include="src\serial\TottoCmd.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
-    <ClCompile Include="src\DashboardFrame.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\GraphFrame\GraphForm.cpp">
+      <Filter>Source Files\GraphFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CtrlFrame\CtrlForm.cpp">
+      <Filter>Source Files\CtrlFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CtrlFrame\CtrlFrame.cpp">
+      <Filter>Source Files\CtrlFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphFrame\GraphFrame.cpp">
+      <Filter>Source Files\GraphFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphFrame\OpenGLPane.cpp">
+      <Filter>Source Files\GraphFrame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MyMainFrame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\wxForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\serial\Serial.h">
@@ -74,7 +89,22 @@
     <ClInclude Include="src\serial\TottoCmd.h">
       <Filter>Header Files\serial</Filter>
     </ClInclude>
-    <ClInclude Include="src\DashboardFrame.h">
+    <ClInclude Include="src\CtrlFrame\CtrlFrame.h">
+      <Filter>Header Files\CtrlFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CtrlFrame\CtrlForm.h">
+      <Filter>Header Files\CtrlFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphFrame\GraphForm.h">
+      <Filter>Header Files\GraphFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphFrame\GraphFrame.h">
+      <Filter>Header Files\GraphFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphFrame\OpenGLPane.h">
+      <Filter>Header Files\GraphFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeasureData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -88,7 +118,10 @@
     <None Include="src\makefile.mingw">
       <Filter>Misc</Filter>
     </None>
-    <None Include="src\wxForm.fbp">
+    <None Include="src\CtrlFrame\CtrlForm.fbp">
+      <Filter>Misc</Filter>
+    </None>
+    <None Include="src\GraphFrame\GraphForm.fbp">
       <Filter>Misc</Filter>
     </None>
   </ItemGroup>

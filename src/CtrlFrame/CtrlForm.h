@@ -5,8 +5,8 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __WXFORM_H__
-#define __WXFORM_H__
+#ifndef __CTRLFORM_H__
+#define __CTRLFORM_H__
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
@@ -60,4 +60,4 @@ class MainFrame : public wxFrame
 	
 };
 
-#endif //__WXFORM_H__
+#endif //__CTRLFORM_H__
