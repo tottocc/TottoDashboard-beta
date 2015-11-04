@@ -54,8 +54,8 @@ bool IsOpen()
 //	return _serial_obj != NULL;
 }
 
-bool Serial::Create(unsigned int num, unsigned int baud)
-{
+//bool Serial::Create(unsigned int num, unsigned int baud)
+//{
 	// Set port name
 /*
 	char *p = _pnamestr;
@@ -68,13 +68,15 @@ bool Serial::Create(unsigned int num, unsigned int baud)
 
 //	_serial_obj = serial_create(_pnamestr, baud);
 //	return _serial_obj != NULL;
-  return 0;
-}
+//  return 0;
+//}
 
+/*
 void Serial::Delete()
 {
 	serial_delete(_serial_obj);
 }
+*/
 
 unsigned int Serial::Send(const BYTE *buf, unsigned int size)
 {

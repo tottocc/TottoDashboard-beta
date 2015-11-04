@@ -8,6 +8,10 @@
 #include "wx/wx.h"
 #endif
 
+// the application icon for Linux and Mac-OSX
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+    #include "../res/tottoIcon.xpm"
+#endif
 
 GraphFrame::GraphFrame(wxWindow* parent, MeasureData *dat)
 :
@@ -25,7 +29,7 @@ MyFrame(parent)
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(fileMenu, wxT("&File"));
 	SetMenuBar(menuBar);
-    
+
 	// Make a GraphGLPane
 
 	// JACS
@@ -67,5 +71,3 @@ void GraphFrame::OnExit(wxCommandEvent& WXUNUSED(event))
 	// true is to force the frame to close
 	Close(true);
 }
-
-

@@ -11,7 +11,7 @@ using namespace std;
 
 // the application icon for Linux and Mac-OSX
 #ifndef wxHAS_IMAGES_IN_RESOURCES
-    #include "res/tottoIcon.xpm"
+    #include "../res/tottoIcon.xpm"
 #endif
 
 #define ON_STATE_COLOUR  wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)
@@ -139,4 +139,3 @@ void CtrlFrame::btn3Click(wxCommandEvent& event)
 		m_button3->SetBackgroundColour(OFF_STATE_COLOUR);
 	}
 }
-

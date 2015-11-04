@@ -17,11 +17,11 @@ bool MyApp::OnInit()
 {
 	// For sampling data
 	MeasureData *bdata = new MeasureData();
-  
+
     //CtrlFrame *ctrlframe = new CtrlFrame(NULL);
     //ctrlframe->SetTitle(wxT("Totto Dashboard"));
     //ctrlframe->Show(true);
-   
+
 	// Create the Graph frame window
 	GraphFrame *gframe = new GraphFrame(NULL, bdata);
 	gframe->SetTitle(wxT("Totto Dashboard"));
