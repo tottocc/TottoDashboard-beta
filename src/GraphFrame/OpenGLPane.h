@@ -28,12 +28,14 @@ public:
 	PlotObject(MeasureData* dat);
 
 	void SetPlotAreaX(float l, float r);
+	void MovePlotAreaX(float x);
 	void AutoScale();
 
 	float GetLeft();
 	float GetRight();
 
-	void Draw();
+	void DrawGraph();
+	void DrawHorizontalScrollbar();
 
 private:
 	float left;
@@ -55,9 +57,12 @@ public:
 
 	bool AddPlotData(MeasureData *dat);
 
+	void resized(wxSizeEvent& evt);
+
 	void UpdateCanvasWidth();
 	void UpdateCanvasHeight();
-	void resized(wxSizeEvent& evt);
+	bool IsGraphArea(int x, int y);
+	bool IsXAxisArea(int x, int y);
 
 	// draw
 	void Prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);

@@ -19,6 +19,8 @@ public:
 			ydat[x] =(x % 1000) / 100;
 			num++;
 		}
+		xmin = 0;
+		xmax = xdelta * (num-1);
 	};
 	~MeasureData() {
 	};
@@ -26,6 +28,9 @@ public:
 	int num;
 	float xdelta;
 	float ydat[SAMPLING_NUM_MAX];
+
+	float xmin;
+	float xmax;
 
 private:
 

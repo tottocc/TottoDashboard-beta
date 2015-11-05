@@ -27,8 +27,14 @@ END_EVENT_TABLE()
 
 
 bool selectRegionFlag;
+bool showHorizontalScrollbarFlag;
+bool selectHorizontalScrollbarFlag;
 int mouseDownPtX;
+int mouseDownPtY;
+int mouseCurrentPtX;
+int mouseCurrentPtY;
 int mouseReleasedPtX;
+int mouseReleasedPtY;
 
 //---------------------------------------------------------------------------
 // OpenGLPane
@@ -49,6 +55,7 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 
 	selectRegionFlag = false;
 	mouseDownPtX = 0;
+	mouseCurrentPtX = 0;
 	mouseReleasedPtX = 0;
 
 	// Initialize Draw Object
@@ -75,16 +82,6 @@ bool OpenGLPane::AddPlotData(MeasureData *dat)
 	return true;
 }
 
-void OpenGLPane::UpdateCanvasWidth()
-{
-	canvasWidth = GetSize().x;
-}
-
-void OpenGLPane::UpdateCanvasHeight()
-{
-	canvasHeight = GetSize().y;
-}
-
 void OpenGLPane::resized(wxSizeEvent& evt)
 {
 	//wxGLCanvas::OnSize(evt);
@@ -95,6 +92,25 @@ void OpenGLPane::resized(wxSizeEvent& evt)
 	Refresh();
 }
 
+void OpenGLPane::UpdateCanvasWidth()
+{
+	canvasWidth = GetSize().x;
+}
+
+void OpenGLPane::UpdateCanvasHeight()
+{
+	canvasHeight = GetSize().y;
+}
+
+bool OpenGLPane::IsGraphArea(int x, int y)
+{
+	return x > leftSpaceWidth && x < canvasWidth - rightSpaceWidth && y > bottomSpaceHeight;
+}
+
+bool OpenGLPane::IsXAxisArea(int x, int y)
+{
+	return x > leftSpaceWidth && x < canvasWidth - rightSpaceWidth && y < bottomSpaceHeight;
+}
 
 //---------------------------------------------------------------------------
 // OpenGLPane Draw Procedure
@@ -192,7 +208,7 @@ void OpenGLPane::render(wxPaintEvent& evt)
 		glLoadIdentity();
 		glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
 		glScalef(canvasWidth - leftSpaceWidth - rightSpaceWidth, canvasHeight - bottomSpaceHeight - topSpaceHeight, 1);
-		plotobj->Draw();
+		plotobj->DrawGraph();
 	}
 
 	// Draw selected region
@@ -209,6 +225,14 @@ void OpenGLPane::render(wxPaintEvent& evt)
 
 	DrawAxis();
 
+	// Draw horizontal scroolbar
+	if (showHorizontalScrollbarFlag) {
+		glLoadIdentity();
+		glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
+		glScalef(canvasWidth - leftSpaceWidth - rightSpaceWidth, 1, 1);
+		plotobj->DrawHorizontalScrollbar();
+	}
+	
 	glFlush();
 	SwapBuffers();
 }
@@ -220,19 +244,36 @@ void OpenGLPane::render(wxPaintEvent& evt)
 
 void OpenGLPane::mouseMoved(wxMouseEvent& event)
 {
-	if (selectRegionFlag) {
-		const wxPoint pt = wxGetMousePosition();
-		mouseReleasedPtX = pt.x - this->GetScreenPosition().x;
+	const wxPoint pt = wxGetMousePosition();
+	int mouseCurrentPtX = pt.x - this->GetScreenPosition().x;
+	int mouseCurrentPtY = canvasHeight - (pt.y - this->GetScreenPosition().y);
 
-		if (mouseReleasedPtX <= leftSpaceWidth) {
+	if (selectRegionFlag) {
+		if (mouseReleasedPtX < leftSpaceWidth) {
 			mouseReleasedPtX = leftSpaceWidth;
 		}
-		else if (mouseReleasedPtX >= canvasWidth - rightSpaceWidth)
+		else if (mouseReleasedPtX > canvasWidth - rightSpaceWidth)
 		{
 			mouseReleasedPtX = canvasWidth - rightSpaceWidth;
+		} else {
+			mouseReleasedPtX = mouseCurrentPtX;
 		}
 		Refresh();
 	}
+	else if (selectHorizontalScrollbarFlag) {
+		plotobj->MovePlotAreaX((float)(mouseCurrentPtX - mouseDownPtX) / (float)(canvasWidth - leftSpaceWidth - rightSpaceWidth));
+		mouseDownPtX = mouseCurrentPtX;
+		Refresh();
+	}
+	else if (IsXAxisArea(mouseCurrentPtX, mouseCurrentPtY)) {
+		showHorizontalScrollbarFlag = true;
+		Refresh();
+	}
+	else {
+		showHorizontalScrollbarFlag = false;
+		Refresh();
+	}
+
 }
 
 void OpenGLPane::mouseWheelMoved(wxMouseEvent& event) {}
@@ -240,18 +281,15 @@ void OpenGLPane::mouseWheelMoved(wxMouseEvent& event) {}
 void OpenGLPane::mouseDown(wxMouseEvent& event) {
 	const wxPoint pt = wxGetMousePosition();
 	mouseDownPtX = pt.x - this->GetScreenPosition().x;
+	mouseDownPtY = canvasHeight - (pt.y - this->GetScreenPosition().y);
 
-	if (mouseDownPtX <= leftSpaceWidth)
-	{
-
-	}
-	else if (mouseDownPtX >= canvasWidth - rightSpaceWidth)
-	{
-
-	}
-	else {
+	if (IsGraphArea(mouseDownPtX, mouseDownPtY)) {
 		mouseReleasedPtX = mouseDownPtX;
 		selectRegionFlag = true;
+		Refresh();
+	}
+	else if (IsXAxisArea(mouseDownPtX, mouseDownPtY)) {
+		selectHorizontalScrollbarFlag = true;
 		Refresh();
 	}
 }
@@ -269,7 +307,7 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 		{
 			mouseReleasedPtX = canvasWidth - rightSpaceWidth;
 		}
-
+		
 		if (mouseReleasedPtX < mouseDownPtX) {
 			int temp = mouseReleasedPtX;
 			mouseReleasedPtX = mouseDownPtX;
@@ -285,6 +323,10 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 		selectRegionFlag = false;
 		Refresh();
 	}
+	else if (selectHorizontalScrollbarFlag) {
+		selectHorizontalScrollbarFlag = false;
+		Refresh();
+	}
 }
 
 void OpenGLPane::rightClick(wxMouseEvent& event)
@@ -293,7 +335,13 @@ void OpenGLPane::rightClick(wxMouseEvent& event)
 	Refresh();
 }
 
-void OpenGLPane::mouseLeftWindow(wxMouseEvent& event) {}
+void OpenGLPane::mouseLeftWindow(wxMouseEvent& event) 
+{
+	showHorizontalScrollbarFlag = false;
+	selectHorizontalScrollbarFlag = false;
+	Refresh();
+}
+
 void OpenGLPane::keyPressed(wxKeyEvent& event) {}
 void OpenGLPane::keyReleased(wxKeyEvent& event) {}
 
@@ -308,8 +356,37 @@ PlotObject::PlotObject(MeasureData* dat) {
 
 void PlotObject::SetPlotAreaX(float l, float r)
 {
-	left = l;
-	right = r;
+	int plotnum = (r - l) / plotdat->xdelta;
+	if (plotnum > 10) {
+		left = l;
+		right = r;
+	}
+}
+
+void PlotObject::MovePlotAreaX(float x)
+{
+	float move = (plotdat->xmax - plotdat->xmin) * x;
+
+	if (move < 0) {
+		if (left + move < plotdat->xmin) {
+			right = right + plotdat->xmin - left;
+			left = plotdat->xmin;
+		}
+		else {
+			left = left + move;
+			right = right + move;
+		}
+	}
+	else {
+		if (right + move > plotdat->xmax) {
+			left = left + plotdat->xmax - right;
+			right = plotdat->xmax;
+		}
+		else {
+			right = right + move;
+			left = left + move;
+		}
+	}
 }
 
 void PlotObject::AutoScale()
@@ -334,7 +411,7 @@ float PlotObject::GetRight()
 	return right;
 }
 
-void PlotObject::Draw()
+void PlotObject::DrawGraph()
 {
 	float w = right - left;
 	float h = top - bottom;
@@ -348,6 +425,26 @@ void PlotObject::Draw()
 	while (i < i_max) {
 		glVertex2d((plotdat->xdelta * i - left) / w, (plotdat->ydat[i] - bottom) / h);
 		i++;
+	}
+	glEnd();
+}
+
+void PlotObject::DrawHorizontalScrollbar()
+{
+	float w = plotdat->xmax - plotdat->xmin;
+	glColor4d(0.5, 0.5, 0.5, 0.5);
+	glBegin(GL_QUADS);
+	if ((right - left) / w > 0.005) {
+		glVertex2d(left / w, 0);
+		glVertex2d(left / w, -15);
+		glVertex2d(right / w, -15);
+		glVertex2d(right / w, 0);
+	}
+	else {
+		glVertex2d(left / w -0.001 , 0);
+		glVertex2d(left / w -0.001, -15);
+		glVertex2d(right / w + 0.001, -15);
+		glVertex2d(right / w + 0.001, 0);
 	}
 	glEnd();
 }
