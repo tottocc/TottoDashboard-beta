@@ -33,7 +33,7 @@ public:
 	float GetLeft();
 	float GetRight();
 
-	void Draw(float w, float h, float l, float r, float b, float t);
+	void Draw();
 
 private:
 	float left;

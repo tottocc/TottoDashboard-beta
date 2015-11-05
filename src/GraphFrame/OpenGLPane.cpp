@@ -136,12 +136,12 @@ void OpenGLPane::DrawAxis()
 	glVertex2d(0, bottomSpaceHeight);
 	glVertex2d(canvasWidth - rightSpaceWidth, bottomSpaceHeight);
 	// x scale
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i <= 10; i++) {
 		glVertex2d((canvasWidth - leftSpaceWidth - rightSpaceWidth) / 10.0 * i + leftSpaceWidth, bottomSpaceHeight);
 		glVertex2d((canvasWidth - leftSpaceWidth - rightSpaceWidth) / 10.0 * i + leftSpaceWidth, bottomSpaceHeight + 5);
 	}
 	glEnd();
-
+	
 	// Draw y-axis
 	// white background
 	glColor4f(1, 1, 1, 1);
@@ -157,7 +157,7 @@ void OpenGLPane::DrawAxis()
 	glVertex2d(leftSpaceWidth, canvasHeight - topSpaceHeight);
 	glVertex2d(leftSpaceWidth, bottomSpaceHeight);
 	// y scale
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i <= 10; i++) {
 		glVertex2d(leftSpaceWidth, (canvasHeight - bottomSpaceHeight - topSpaceHeight) / 10.0 * i + bottomSpaceHeight);
 		glVertex2d(leftSpaceWidth + 5, (canvasHeight - bottomSpaceHeight - topSpaceHeight) / 10.0 * i + bottomSpaceHeight);
 	}
@@ -189,10 +189,14 @@ void OpenGLPane::render(wxPaintEvent& evt)
 
 	// Draw plot data
 	if (plotobj) {
-		plotobj->Draw(canvasWidth, canvasHeight, leftSpaceWidth, rightSpaceWidth, bottomSpaceHeight, topSpaceHeight);
+		glLoadIdentity();
+		glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
+		glScalef(canvasWidth - leftSpaceWidth - rightSpaceWidth, canvasHeight - bottomSpaceHeight - topSpaceHeight, 1);
+		plotobj->Draw();
 	}
 
 	// Draw selected region
+	glLoadIdentity();
 	if (selectRegionFlag) {
 		glColor4f(0.5, 0.5, 0.5, 0.5);
 		glBegin(GL_QUADS);
@@ -272,9 +276,10 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 			mouseDownPtX = temp;
 		}
 
-		float l = (mouseDownPtX - leftSpaceWidth) * (plotobj->GetRight() - plotobj->GetLeft()) / (canvasWidth - leftSpaceWidth - rightSpaceWidth);
-		float r = (mouseReleasedPtX - leftSpaceWidth) * (plotobj->GetRight() - plotobj->GetLeft()) / (canvasWidth - leftSpaceWidth - rightSpaceWidth);
-
+		float l = (mouseDownPtX - leftSpaceWidth) / (float)(canvasWidth - leftSpaceWidth - rightSpaceWidth)
+			* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
+		float r = (mouseReleasedPtX - leftSpaceWidth) / (float)(canvasWidth - leftSpaceWidth - rightSpaceWidth)
+			* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
 		plotobj->SetPlotAreaX(l, r);
 
 		selectRegionFlag = false;
@@ -329,14 +334,10 @@ float PlotObject::GetRight()
 	return right;
 }
 
-void PlotObject::Draw(float w, float h, float l, float r, float b, float t)
+void PlotObject::Draw()
 {
-	// Graph drawing size
-	float width = w - r - l;
-	float height = h - t - b;
-
-	float xscale = width / (right - left);
-	float yscale = height / (top - bottom);
+	float w = right - left;
+	float h = top - bottom;
 
 	int i = (int)(left / plotdat->xdelta);
 	int i_max = (int)(right / plotdat->xdelta);
@@ -345,7 +346,7 @@ void PlotObject::Draw(float w, float h, float l, float r, float b, float t)
 	glColor3d(0.0, 0.0, 0.0);
 	glBegin(GL_LINE_STRIP);
 	while (i < i_max) {
-		glVertex2d(xscale * (plotdat->xdelta * i - left) + l, yscale * (plotdat->ydat[i] - bottom) + b);
+		glVertex2d((plotdat->xdelta * i - left) / w, (plotdat->ydat[i] - bottom) / h);
 		i++;
 	}
 	glEnd();
