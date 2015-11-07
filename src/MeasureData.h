@@ -3,7 +3,8 @@
 #define __MEASUREDATA_H__
 
 //#define SAMPLING_NUM_MAX 8640000
-#define SAMPLING_NUM_MAX 1000
+#define SAMPLING_NUM_MAX 10000
+//#define SAMPLING_NUM_MAX 1000
 
 #include <stdlib.h>
 
