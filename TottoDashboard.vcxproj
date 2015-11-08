@@ -51,12 +51,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;.\..\lib\wxWidgets-3.0.2\include;.\..\lib\wxWidgets-3.0.2\lib\vc_lib\mswud;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\lib\wxWidgets-3.0.2\include;..\lib\wxWidgets-3.0.2\lib\vc_lib\mswud</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\..\lib\wxWidgets-3.0.2\lib\vc_lib;.\..\lib\glew-1.13.0\lib\Debug\Win32;.\..\lib\freetype-2.4.0\objs\win32\vc2008</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);wxmsw30ud_core.lib;wxbase30ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;wininet.lib;wxmsw30ud_gl.lib;opengl32.lib;glu32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib\wxWidgets-3.0.2\lib\vc_lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);wxmsw30ud_core.lib;wxbase30ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;wininet.lib;wxmsw30ud_gl.lib;opengl32.lib;glu32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,6 +82,7 @@
     <ClCompile Include="src\GraphFrame\GraphForm.cpp" />
     <ClCompile Include="src\GraphFrame\GraphFrame.cpp" />
     <ClCompile Include="src\GraphFrame\OpenGLPane.cpp" />
+    <ClCompile Include="src\GraphFrame\DrawText.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\serial\TottoCmd.cpp" />
     <ClCompile Include="src\serial\CoreCmd.cpp" />
@@ -89,6 +90,8 @@
     <ClCompile Include="src\serial\Serial_win.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GraphFrame\DrawText.h" />
+    <ClInclude Include="src\GraphFrame\PrimitiveFont-ter-u28n.h" />
     <ClInclude Include="src\MeasureData.h" />
     <ClInclude Include="src\CtrlFrame\CtrlForm.h" />
     <ClInclude Include="src\CtrlFrame\CtrlFrame.h" />

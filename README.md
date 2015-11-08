@@ -11,6 +11,17 @@ Totto Dashboard Application
 
 WxWidgets
 
+
+## Reference
+
+Include Source
+
+PrimitiveFont
+http://umiushi.org/~wac/PrimitiveFont/
+
+Terminus Font Home Page
+http://terminus-font.sourceforge.net/
+
 ## Licence
 
 [GPLv2] Please refer to the LICENSE file in this repository

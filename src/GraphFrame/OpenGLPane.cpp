@@ -11,6 +11,7 @@
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
 #endif
 
+#include "DrawText.h"
 
 BEGIN_EVENT_TABLE(OpenGLPane, wxGLCanvas)
 EVT_MOTION(OpenGLPane::mouseMoved)
@@ -60,6 +61,10 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 
 	// Initialize Draw Object
 	plotobj = NULL;
+
+	// Initialize font
+	if (!InitFont())
+		fprintf(stderr, "Fail to initialize font datar\n");
 
 	// To avoid flashing on MSW
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
@@ -180,6 +185,10 @@ void OpenGLPane::DrawAxis()
 	glEnd();
 }
 
+void OpenGLPane::RenderText(char *text) {
+
+}
+
 void OpenGLPane::render(wxPaintEvent& evt)
 {
 	if (!IsShown()) return;
@@ -232,7 +241,16 @@ void OpenGLPane::render(wxPaintEvent& evt)
 		glScalef(canvasWidth - leftSpaceWidth - rightSpaceWidth, 1, 1);
 		plotobj->DrawHorizontalScrollbar();
 	}
-	
+
+
+	// Draw sample text
+	glColor3d(0.0, 0.0, 0.0);
+	glLoadIdentity();
+	glTranslated(leftSpaceWidth + 16, bottomSpaceHeight - 8, 0);
+	glScalef(0.75, 0.75, 1);
+	wxString str(wxT("0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"));
+	DrawText(str.char_str());
+
 	glFlush();
 	SwapBuffers();
 }

@@ -1,7 +1,7 @@
 #ifndef __OPENGLPANE__
 #define __OPENGLPANE__
 
-#include "wx/glcanvas.h"
+#include <wx/glcanvas.h>
 #include "../MeasureData.h"
 
 // we need OpenGL headers for GLfloat/GLint types used below
@@ -67,6 +67,7 @@ public:
 	// draw
 	void Prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
 	void DrawAxis();
+	void RenderText(char *text);
 	void render(wxPaintEvent& evt);
 
 	// other events

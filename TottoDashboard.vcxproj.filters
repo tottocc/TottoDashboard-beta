@@ -72,6 +72,9 @@
     <ClCompile Include="src\GraphFrame\OpenGLPane.cpp">
       <Filter>Source Files\GraphFrame</Filter>
     </ClCompile>
+    <ClCompile Include="src\GraphFrame\DrawText.cpp">
+      <Filter>Source Files\GraphFrame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Main.h">
@@ -106,6 +109,12 @@
     </ClInclude>
     <ClInclude Include="src\MeasureData.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphFrame\DrawText.h">
+      <Filter>Header Files\GraphFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphFrame\PrimitiveFont-ter-u28n.h">
+      <Filter>Header Files\GraphFrame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
