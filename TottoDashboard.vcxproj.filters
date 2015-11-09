@@ -116,6 +116,9 @@
     <ClInclude Include="src\GraphFrame\PrimitiveFont-ter-u28n.h">
       <Filter>Header Files\GraphFrame</Filter>
     </ClInclude>
+    <ClInclude Include="src\GraphFrame\PrimitiveFont-ter-u22b.h">
+      <Filter>Header Files\GraphFrame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE">

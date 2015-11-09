@@ -2,9 +2,11 @@
 
 #include <wx/glcanvas.h>
 #include "PrimitiveFont-ter-u28n.h"
+#include "PrimitiveFont-ter-u22b.h"
 
 
 PrimitiveFontData *primitive_font_data_ter_u28n;
+PrimitiveFontData *primitive_font_data_ter_u22b;
 
 
 static bool getHeaderKanji(const PrimitiveFontData *primitive_font_data,
@@ -160,7 +162,7 @@ static void drawKanjiLine(const PrimitiveFontData *primitive_font_data,
 bool InitFont()
 {
 	const int margin = 1024;
-	primitive_font_data_ter_u28n = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data) + margin));
+	primitive_font_data_ter_u28n = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u28n) + margin));
 
 	uintptr_t tmp = reinterpret_cast<uintptr_t>(primitive_font_data_ter_u28n);
 	if (tmp & 0x3)
@@ -169,9 +171,26 @@ bool InitFont()
 		return false;
 	}
 
-	memcpy(primitive_font_data_ter_u28n, data, sizeof(data));
+	memcpy(primitive_font_data_ter_u28n, data_ter_u28n, sizeof(data_ter_u28n));
 
 	if (primitive_font_data_ter_u28n == 0)
+	{
+		fprintf(stderr, "memory allocation error\n");
+		return false;
+	}
+
+	primitive_font_data_ter_u22b = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u22b) + margin));
+
+	tmp = reinterpret_cast<uintptr_t>(primitive_font_data_ter_u22b);
+	if (tmp & 0x3)
+	{
+		fprintf(stderr, "memory alignment error\n");
+		return false;
+	}
+
+	memcpy(primitive_font_data_ter_u22b, data_ter_u22b, sizeof(data_ter_u22b));
+
+	if (primitive_font_data_ter_u22b == 0)
 	{
 		fprintf(stderr, "memory allocation error\n");
 		return false;
@@ -180,10 +199,38 @@ bool InitFont()
 	return true;
 }
 
-void DrawText(char *str)
+void DrawText(const char *p, float scale, drawPosition_t pos)
 {
-	while (*str) {
-		drawKanjiLine(primitive_font_data_ter_u28n, *str++);
-		glTranslated(16, 0, 0);
+	PrimitiveFontData *font;
+	if (scale >= FONT_SCALE_MIDDLE)
+		font = primitive_font_data_ter_u28n;
+	else
+		font = primitive_font_data_ter_u22b;
+
+	glScalef(scale, scale, 1);
+
+	int len = strlen(p);
+	if (pos == CENTER) {
+		glTranslated(-FONT_WIDTH * len / 2.0, 0, 0);
 	}
+	else if (pos == RIGHT){
+		glTranslated(-FONT_WIDTH * len, 0, 0);
+	}
+	while (*p) {
+		drawKanjiLine(font, *p++);
+		glTranslated(FONT_WIDTH, 0, 0);
+	}
+}
+
+void DrawText(string str, float scale, drawPosition_t pos)
+{
+	const char *p = str.c_str();
+	DrawText(p, scale, pos);
+}
+
+void DrawText(float f, float scale, drawPosition_t pos)
+{
+	char str[10];
+	sprintf(str, "%9.2f", f);
+	DrawText(str, scale, pos);
 }

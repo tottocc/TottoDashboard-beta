@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphFrame\DrawText.h" />
+    <ClInclude Include="src\GraphFrame\PrimitiveFont-ter-u22b.h" />
     <ClInclude Include="src\GraphFrame\PrimitiveFont-ter-u28n.h" />
     <ClInclude Include="src\MeasureData.h" />
     <ClInclude Include="src\CtrlFrame\CtrlForm.h" />

@@ -13,6 +13,7 @@
 
 #include "DrawText.h"
 
+
 BEGIN_EVENT_TABLE(OpenGLPane, wxGLCanvas)
 EVT_MOTION(OpenGLPane::mouseMoved)
 EVT_LEFT_DOWN(OpenGLPane::mouseDown)
@@ -37,6 +38,7 @@ int mouseCurrentPtY;
 int mouseReleasedPtX;
 int mouseReleasedPtY;
 
+
 //---------------------------------------------------------------------------
 // OpenGLPane
 //---------------------------------------------------------------------------
@@ -49,10 +51,10 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 	// Initialize parameters
 	UpdateCanvasWidth();
 	UpdateCanvasHeight();
-	leftSpaceWidth = 60;
-	rightSpaceWidth = 30;
-	topSpaceHeight = 10;
-	bottomSpaceHeight = 30;
+	leftSpaceWidth = 80;
+	rightSpaceWidth = 40;
+	topSpaceHeight = 20;
+	bottomSpaceHeight = 50;
 
 	selectRegionFlag = false;
 	mouseDownPtX = 0;
@@ -85,6 +87,17 @@ bool OpenGLPane::AddPlotData(MeasureData *dat)
 	}
 
 	return true;
+}
+
+
+int OpenGLPane::GetGraphWidth()
+{
+	return canvasWidth - leftSpaceWidth - rightSpaceWidth;
+}
+
+int OpenGLPane::GetGraphHeight()
+{
+	return canvasHeight - bottomSpaceHeight - topSpaceHeight;
 }
 
 void OpenGLPane::resized(wxSizeEvent& evt)
@@ -142,8 +155,7 @@ void OpenGLPane::Prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth
 
 void OpenGLPane::DrawAxis()
 {
-	// Draw x-axis
-	// white background
+	// white background for x-axis
 	glColor4f(1, 1, 1, 1);
 	glBegin(GL_QUADS);
 	glVertex2d(0, bottomSpaceHeight);
@@ -151,20 +163,8 @@ void OpenGLPane::DrawAxis()
 	glVertex2d(canvasWidth, 0);
 	glVertex2d(canvasWidth, bottomSpaceHeight);
 	glEnd();
-	// x-axis
-	glColor3d(0.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex2d(0, bottomSpaceHeight);
-	glVertex2d(canvasWidth - rightSpaceWidth, bottomSpaceHeight);
-	// x scale
-	for (int i = 0; i <= 10; i++) {
-		glVertex2d((canvasWidth - leftSpaceWidth - rightSpaceWidth) / 10.0 * i + leftSpaceWidth, bottomSpaceHeight);
-		glVertex2d((canvasWidth - leftSpaceWidth - rightSpaceWidth) / 10.0 * i + leftSpaceWidth, bottomSpaceHeight + 5);
-	}
-	glEnd();
-	
-	// Draw y-axis
-	// white background
+
+	// white background for y-axis
 	glColor4f(1, 1, 1, 1);
 	glBegin(GL_QUADS);
 	glVertex2d(0, canvasHeight);
@@ -172,6 +172,21 @@ void OpenGLPane::DrawAxis()
 	glVertex2d(leftSpaceWidth, 0);
 	glVertex2d(leftSpaceWidth, canvasHeight);
 	glEnd();
+
+	// Draw x-axis
+	// x-axis
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex2d(leftSpaceWidth, bottomSpaceHeight);
+	glVertex2d(canvasWidth - rightSpaceWidth, bottomSpaceHeight);
+	// x scale
+	for (int i = 0; i <= 10; i++) {
+		glVertex2d(GetGraphWidth() / 10.0 * i + leftSpaceWidth, bottomSpaceHeight - 5);
+		glVertex2d(GetGraphWidth() / 10.0 * i + leftSpaceWidth, bottomSpaceHeight);
+	}
+	glEnd();
+
+	// Draw y-axis
 	// y-axis
 	glColor3d(0.0, 0.0, 0.0);
 	glBegin(GL_LINES);
@@ -179,10 +194,46 @@ void OpenGLPane::DrawAxis()
 	glVertex2d(leftSpaceWidth, bottomSpaceHeight);
 	// y scale
 	for (int i = 0; i <= 10; i++) {
-		glVertex2d(leftSpaceWidth, (canvasHeight - bottomSpaceHeight - topSpaceHeight) / 10.0 * i + bottomSpaceHeight);
-		glVertex2d(leftSpaceWidth + 5, (canvasHeight - bottomSpaceHeight - topSpaceHeight) / 10.0 * i + bottomSpaceHeight);
+		glVertex2d(leftSpaceWidth, GetGraphHeight() / 10.0 * i + bottomSpaceHeight);
+		glVertex2d(leftSpaceWidth + 5, GetGraphHeight() / 10.0 * i + bottomSpaceHeight);
 	}
 	glEnd();
+
+	// Draw x-scale
+	glColor3d(0.0, 0.0, 0.0);
+	glPushMatrix();
+	glTranslated(leftSpaceWidth, bottomSpaceHeight - 6, 0);
+	DrawText(plotobj->GetLeft(), FONT_SCALE_SMALL, CENTER);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(canvasWidth - rightSpaceWidth, bottomSpaceHeight - 6, 0);
+	DrawText(plotobj->GetRight(), FONT_SCALE_SMALL, CENTER);
+	glPopMatrix();
+
+	// Draw y-scale
+	glColor3d(0.0, 0.0, 0.0);
+	glPushMatrix();
+	glTranslated(leftSpaceWidth - 6, bottomSpaceHeight + 6, 0);
+	DrawText(plotobj->GetBottom(), FONT_SCALE_SMALL, RIGHT);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(leftSpaceWidth - 6, canvasHeight - topSpaceHeight + 6, 0);
+	DrawText(plotobj->GetTop(), FONT_SCALE_SMALL, RIGHT);
+	glPopMatrix();
+
+	// Draw xy-axis name
+	glPushMatrix();
+	glTranslated(GetGraphWidth() / 2.0 + leftSpaceWidth, bottomSpaceHeight - 15, 0);
+	plotobj->DrawXname(FONT_SCALE_MIDDLE);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(5, GetGraphHeight() / 2.0 + bottomSpaceHeight, 0);
+	glRotatef(90, 0, 0, 1);
+	plotobj->DrawYname(FONT_SCALE_MIDDLE);
+	glPopMatrix();
 }
 
 void OpenGLPane::RenderText(char *text) {
@@ -216,7 +267,7 @@ void OpenGLPane::render(wxPaintEvent& evt)
 	if (plotobj) {
 		glLoadIdentity();
 		glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
-		glScalef(canvasWidth - leftSpaceWidth - rightSpaceWidth, canvasHeight - bottomSpaceHeight - topSpaceHeight, 1);
+		glScalef(GetGraphWidth(), GetGraphHeight(), 1);
 		plotobj->DrawGraph();
 	}
 
@@ -238,18 +289,25 @@ void OpenGLPane::render(wxPaintEvent& evt)
 	if (showHorizontalScrollbarFlag) {
 		glLoadIdentity();
 		glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
-		glScalef(canvasWidth - leftSpaceWidth - rightSpaceWidth, 1, 1);
+		glScalef(GetGraphWidth(), 1, 1);
 		plotobj->DrawHorizontalScrollbar();
 	}
 
-
+	/*
 	// Draw sample text
-	glColor3d(0.0, 0.0, 0.0);
+	string str = "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+	for (int i = 0; i < 1; i++) {
+		glColor3d(0.0, 0.0, 0.0);
+		glLoadIdentity();
+		glTranslated(leftSpaceWidth + 16, bottomSpaceHeight + 32 + i * 16, 0);
+		DrawText(str, FONT_SCALE_SMALL - 0.01 * i, LEFT);
+	}
 	glLoadIdentity();
-	glTranslated(leftSpaceWidth + 16, bottomSpaceHeight - 8, 0);
-	glScalef(0.75, 0.75, 1);
-	wxString str(wxT("0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"));
-	DrawText(str.char_str());
+	glTranslated(10, 0, 0);
+	glRotatef(90, 0, 0, 1);
+	str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+	DrawText(str, FONT_SCALE_SMALL, LEFT);
+	*/
 
 	glFlush();
 	SwapBuffers();
@@ -279,7 +337,7 @@ void OpenGLPane::mouseMoved(wxMouseEvent& event)
 		Refresh();
 	}
 	else if (selectHorizontalScrollbarFlag) {
-		plotobj->MovePlotAreaX((float)(mouseCurrentPtX - mouseDownPtX) / (float)(canvasWidth - leftSpaceWidth - rightSpaceWidth));
+		plotobj->MovePlotAreaX((float)(mouseCurrentPtX - mouseDownPtX) / (float)(GetGraphWidth()));
 		mouseDownPtX = mouseCurrentPtX;
 		Refresh();
 	}
@@ -332,9 +390,9 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 			mouseDownPtX = temp;
 		}
 
-		float l = (mouseDownPtX - leftSpaceWidth) / (float)(canvasWidth - leftSpaceWidth - rightSpaceWidth)
+		float l = (mouseDownPtX - leftSpaceWidth) / (float)(GetGraphWidth())
 			* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
-		float r = (mouseReleasedPtX - leftSpaceWidth) / (float)(canvasWidth - leftSpaceWidth - rightSpaceWidth)
+		float r = (mouseReleasedPtX - leftSpaceWidth) / (float)(GetGraphWidth())
 			* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
 		plotobj->SetPlotAreaX(l, r);
 
@@ -410,7 +468,10 @@ void PlotObject::MovePlotAreaX(float x)
 void PlotObject::AutoScale()
 {
 	left = 0.0;
-	right = plotdat->xdelta * plotdat->num;
+	if (plotdat->num > 1)
+		right = plotdat->xdelta * (plotdat->num - 1);
+	else
+		right = plotdat->xdelta;
 	bottom = 0.0;
 	top = 0.0;
 	for (int i = 0; i < plotdat->num; i++) {
@@ -427,6 +488,16 @@ float PlotObject::GetLeft()
 float PlotObject::GetRight()
 {
 	return right;
+}
+
+float PlotObject::GetBottom()
+{
+	return bottom;
+}
+
+float PlotObject::GetTop()
+{
+	return top;
 }
 
 void PlotObject::DrawGraph()
@@ -467,8 +538,17 @@ void PlotObject::DrawHorizontalScrollbar()
 	glEnd();
 }
 
+void PlotObject::DrawXname(float scale)
+{
+	int len = plotdat->xname.size();
+	DrawText(plotdat->xname, scale, CENTER);
+}
 
-
+void PlotObject::DrawYname(float scale)
+{
+	int len = plotdat->yname.size();
+	DrawText(plotdat->yname, scale, CENTER);
+}
 
 
 

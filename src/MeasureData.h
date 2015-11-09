@@ -2,11 +2,16 @@
 #ifndef __MEASUREDATA_H__
 #define __MEASUREDATA_H__
 
+#include <stdlib.h>
+#include <wx/string.h> // instead of <string>
+using namespace std;
+
 //#define SAMPLING_NUM_MAX 8640000
 #define SAMPLING_NUM_MAX 10000
 //#define SAMPLING_NUM_MAX 1000
 
-#include <stdlib.h>
+
+enum unit_t {sec, mA};
 
 class MeasureData
 {
@@ -17,11 +22,16 @@ public:
 //		xdelta = 1;   // 1 sec interval
 		for (int x = 0; x < SAMPLING_NUM_MAX; x++) {
 //			ydat[x] = (rand() % 11) * 0.1;
-			ydat[x] =(x % 1000) / 100;
+			ydat[x] =(x % 1000) / 100 * 100;
 			num++;
 		}
 		xmin = 0;
 		xmax = xdelta * (num-1);
+
+		xname = "Time";
+		yname = "Current";
+		xunit = sec;
+		yunit = mA;
 	};
 	~MeasureData() {
 	};
@@ -32,6 +42,11 @@ public:
 
 	float xmin;
 	float xmax;
+
+	string xname;
+	string yname;
+	unit_t xunit;
+	unit_t yunit;
 
 private:
 

@@ -21,7 +21,6 @@
 
 #define PLOTOBJECT_NUM_MAX 10
 
-
 class PlotObject
 {
 public:
@@ -33,9 +32,14 @@ public:
 
 	float GetLeft();
 	float GetRight();
+	float GetBottom();
+	float GetTop();
 
 	void DrawGraph();
 	void DrawHorizontalScrollbar();
+
+	void DrawXname(float scale);
+	void DrawYname(float scale);
 
 private:
 	float left;
@@ -59,6 +63,8 @@ public:
 
 	void resized(wxSizeEvent& evt);
 
+	int GetGraphWidth();
+	int GetGraphHeight();
 	void UpdateCanvasWidth();
 	void UpdateCanvasHeight();
 	bool IsGraphArea(int x, int y);
