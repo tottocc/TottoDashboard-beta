@@ -35,12 +35,12 @@ public:
 	float GetBottom();
 	float GetTop();
 
-	void DrawGraph();
+	void DrawGraph(int width, int height);
 	void DrawHorizontalScrollbar();
-
+	void DrawAxis(int width, int height);
 	void DrawXname(float scale);
 	void DrawYname(float scale);
-
+	
 private:
 	float left;
 	float right;
@@ -72,8 +72,6 @@ public:
 
 	// draw
 	void Prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
-	void DrawAxis();
-	void RenderText(char *text);
 	void render(wxPaintEvent& evt);
 
 	// other events

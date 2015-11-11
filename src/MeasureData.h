@@ -6,8 +6,12 @@
 #include <wx/string.h> // instead of <string>
 using namespace std;
 
+#include <wx/time.h>
+
+
+
 //#define SAMPLING_NUM_MAX 8640000
-#define SAMPLING_NUM_MAX 10000
+#define SAMPLING_NUM_MAX 100000
 //#define SAMPLING_NUM_MAX 1000
 
 
@@ -32,6 +36,8 @@ public:
 		yname = "Current";
 		xunit = sec;
 		yunit = mA;
+
+		utime = wxGetUTCTimeUSec();
 	};
 	~MeasureData() {
 	};
@@ -47,6 +53,8 @@ public:
 	string yname;
 	unit_t xunit;
 	unit_t yunit;
+
+	wxLongLong utime;  // number of microseconds since GMT 00:00:00 Jan 1st 1970. 
 
 private:
 

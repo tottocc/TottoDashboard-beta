@@ -159,7 +159,7 @@ static void drawKanjiLine(const PrimitiveFontData *primitive_font_data,
 	}
 }
 
-bool InitFont()
+bool init_font()
 {
 	const int margin = 1024;
 	primitive_font_data_ter_u28n = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u28n) + margin));
@@ -199,7 +199,7 @@ bool InitFont()
 	return true;
 }
 
-void DrawText(const char *p, float scale, drawPosition_t pos)
+void draw_text(const char *p, float scale, drawPosition_t pos)
 {
 	PrimitiveFontData *font;
 	if (scale >= FONT_SCALE_MIDDLE)
@@ -222,15 +222,15 @@ void DrawText(const char *p, float scale, drawPosition_t pos)
 	}
 }
 
-void DrawText(string str, float scale, drawPosition_t pos)
+void draw_text(string str, float scale, drawPosition_t pos)
 {
 	const char *p = str.c_str();
-	DrawText(p, scale, pos);
+	draw_text(p, scale, pos);
 }
 
-void DrawText(float f, float scale, drawPosition_t pos)
+void draw_text(float f, float scale, drawPosition_t pos)
 {
-	char str[10];
-	sprintf(str, "%9.2f", f);
-	DrawText(str, scale, pos);
+	char str[15];
+	sprintf(str, "%.5g", f);
+	draw_text(str, scale, pos);
 }

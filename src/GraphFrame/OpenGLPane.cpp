@@ -65,7 +65,7 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 	plotobj = NULL;
 
 	// Initialize font
-	if (!InitFont())
+	if (!init_font())
 		fprintf(stderr, "Fail to initialize font datar\n");
 
 	// To avoid flashing on MSW
@@ -153,93 +153,6 @@ void OpenGLPane::Prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth
 	glLoadIdentity();
 }
 
-void OpenGLPane::DrawAxis()
-{
-	// white background for x-axis
-	glColor4f(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-	glVertex2d(0, bottomSpaceHeight);
-	glVertex2d(0, 0);
-	glVertex2d(canvasWidth, 0);
-	glVertex2d(canvasWidth, bottomSpaceHeight);
-	glEnd();
-
-	// white background for y-axis
-	glColor4f(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-	glVertex2d(0, canvasHeight);
-	glVertex2d(0, 0);
-	glVertex2d(leftSpaceWidth, 0);
-	glVertex2d(leftSpaceWidth, canvasHeight);
-	glEnd();
-
-	// Draw x-axis
-	// x-axis
-	glColor3d(0.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex2d(leftSpaceWidth, bottomSpaceHeight);
-	glVertex2d(canvasWidth - rightSpaceWidth, bottomSpaceHeight);
-	// x scale
-	for (int i = 0; i <= 10; i++) {
-		glVertex2d(GetGraphWidth() / 10.0 * i + leftSpaceWidth, bottomSpaceHeight - 5);
-		glVertex2d(GetGraphWidth() / 10.0 * i + leftSpaceWidth, bottomSpaceHeight);
-	}
-	glEnd();
-
-	// Draw y-axis
-	// y-axis
-	glColor3d(0.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex2d(leftSpaceWidth, canvasHeight - topSpaceHeight);
-	glVertex2d(leftSpaceWidth, bottomSpaceHeight);
-	// y scale
-	for (int i = 0; i <= 10; i++) {
-		glVertex2d(leftSpaceWidth, GetGraphHeight() / 10.0 * i + bottomSpaceHeight);
-		glVertex2d(leftSpaceWidth + 5, GetGraphHeight() / 10.0 * i + bottomSpaceHeight);
-	}
-	glEnd();
-
-	// Draw x-scale
-	glColor3d(0.0, 0.0, 0.0);
-	glPushMatrix();
-	glTranslated(leftSpaceWidth, bottomSpaceHeight - 6, 0);
-	DrawText(plotobj->GetLeft(), FONT_SCALE_SMALL, CENTER);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(canvasWidth - rightSpaceWidth, bottomSpaceHeight - 6, 0);
-	DrawText(plotobj->GetRight(), FONT_SCALE_SMALL, CENTER);
-	glPopMatrix();
-
-	// Draw y-scale
-	glColor3d(0.0, 0.0, 0.0);
-	glPushMatrix();
-	glTranslated(leftSpaceWidth - 6, bottomSpaceHeight + 6, 0);
-	DrawText(plotobj->GetBottom(), FONT_SCALE_SMALL, RIGHT);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(leftSpaceWidth - 6, canvasHeight - topSpaceHeight + 6, 0);
-	DrawText(plotobj->GetTop(), FONT_SCALE_SMALL, RIGHT);
-	glPopMatrix();
-
-	// Draw xy-axis name
-	glPushMatrix();
-	glTranslated(GetGraphWidth() / 2.0 + leftSpaceWidth, bottomSpaceHeight - 15, 0);
-	plotobj->DrawXname(FONT_SCALE_MIDDLE);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslated(5, GetGraphHeight() / 2.0 + bottomSpaceHeight, 0);
-	glRotatef(90, 0, 0, 1);
-	plotobj->DrawYname(FONT_SCALE_MIDDLE);
-	glPopMatrix();
-}
-
-void OpenGLPane::RenderText(char *text) {
-
-}
-
 void OpenGLPane::render(wxPaintEvent& evt)
 {
 	if (!IsShown()) return;
@@ -267,8 +180,7 @@ void OpenGLPane::render(wxPaintEvent& evt)
 	if (plotobj) {
 		glLoadIdentity();
 		glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
-		glScalef(GetGraphWidth(), GetGraphHeight(), 1);
-		plotobj->DrawGraph();
+		plotobj->DrawGraph(GetGraphWidth(), GetGraphHeight());
 	}
 
 	// Draw selected region
@@ -283,7 +195,28 @@ void OpenGLPane::render(wxPaintEvent& evt)
 		glEnd();
 	}
 
-	DrawAxis();
+	// white background for x-axis
+	glColor4f(1, 1, 1, 1);
+	glBegin(GL_QUADS);
+	glVertex2d(0, bottomSpaceHeight);
+	glVertex2d(0, 0);
+	glVertex2d(canvasWidth, 0);
+	glVertex2d(canvasWidth, bottomSpaceHeight);
+	glEnd();
+
+	// white background for y-axis
+	glColor4f(1, 1, 1, 1);
+	glBegin(GL_QUADS);
+	glVertex2d(0, canvasHeight);
+	glVertex2d(0, 0);
+	glVertex2d(leftSpaceWidth, 0);
+	glVertex2d(leftSpaceWidth, canvasHeight);
+	glEnd();
+
+	// Draw axis
+	glLoadIdentity();
+	glTranslated(leftSpaceWidth, bottomSpaceHeight, 0);
+	plotobj->DrawAxis(GetGraphWidth(), GetGraphHeight());
 
 	// Draw horizontal scroolbar
 	if (showHorizontalScrollbarFlag) {
@@ -300,13 +233,13 @@ void OpenGLPane::render(wxPaintEvent& evt)
 		glColor3d(0.0, 0.0, 0.0);
 		glLoadIdentity();
 		glTranslated(leftSpaceWidth + 16, bottomSpaceHeight + 32 + i * 16, 0);
-		DrawText(str, FONT_SCALE_SMALL - 0.01 * i, LEFT);
+		draw_text(str, FONT_SCALE_SMALL - 0.01 * i, LEFT);
 	}
 	glLoadIdentity();
 	glTranslated(10, 0, 0);
 	glRotatef(90, 0, 0, 1);
 	str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
-	DrawText(str, FONT_SCALE_SMALL, LEFT);
+	draw_text(str, FONT_SCALE_SMALL, LEFT);
 	*/
 
 	glFlush();
@@ -500,7 +433,7 @@ float PlotObject::GetTop()
 	return top;
 }
 
-void PlotObject::DrawGraph()
+void PlotObject::DrawGraph(int width, int height)
 {
 	float w = right - left;
 	float h = top - bottom;
@@ -512,7 +445,7 @@ void PlotObject::DrawGraph()
 	glColor3d(0.0, 0.0, 0.0);
 	glBegin(GL_LINE_STRIP);
 	while (i < i_max) {
-		glVertex2d((plotdat->xdelta * i - left) / w, (plotdat->ydat[i] - bottom) / h);
+		glVertex2d((plotdat->xdelta * i - left) * width / w, (plotdat->ydat[i] - bottom) * height / h);
 		i++;
 	}
 	glEnd();
@@ -538,17 +471,124 @@ void PlotObject::DrawHorizontalScrollbar()
 	glEnd();
 }
 
-void PlotObject::DrawXname(float scale)
-{
-	int len = plotdat->xname.size();
-	DrawText(plotdat->xname, scale, CENTER);
+//
+// Local function for scale division
+//
+void get_digit(float *msd, float *diff, float v) {
+	*msd = 1;
+	if (v >= 1.0) {
+		while ((v /= 10) >= 1) {
+			*msd *= 10;
+		}
+	}
+	else if (v>0.0) {
+		while ((v *= 10) < 1) {
+			*msd /= 10;
+		}
+	}
+	*diff = round(v * 100) / 10.0;
 }
 
-void PlotObject::DrawYname(float scale)
+void get_scaler_step(float *step, float *offset, float b, float t)
 {
-	int len = plotdat->yname.size();
-	DrawText(plotdat->yname, scale, CENTER);
+	float msd;
+	float diff;
+	get_digit(&msd, &diff, t - b);
+
+	if (diff < 1.2)
+		*step = 0.2;
+	if (diff < 2)
+		*step = 0.2;
+	else if (diff < 3)
+		*step = 0.5;
+	else if (diff < 4)
+		*step = 0.5;
+	else if (diff < 5)
+		*step = 1.0;
+	else if (diff < 6)
+		*step = 1.0;
+	else if (diff < 7)
+		*step = 1.0;
+	else if (diff < 8)
+		*step = 1.0;
+	else if (diff < 9)
+		*step = 2.0;
+	else
+		*step = 2.0;
+
+	*step = *step * msd;
+	if (fmod(b, *step) != 0)
+		*offset = b - fmod(b, *step) + *step;
+	else
+		*offset = b;
 }
+
+void PlotObject::DrawAxis(int width, int height)
+{
+	float w = right - left;
+	float h = top - bottom;
+
+	float step;
+	int stepnum;
+	float offset;
+
+	// x scale division
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex2d(0, 0);
+	glVertex2d(width, 0);
+	glEnd();
+	get_scaler_step(&step, &offset, left, right);
+	for (int i = 0; step *i + offset <= right; i++) {
+		glBegin(GL_LINES);
+		if (i != 0) {
+			glVertex2d((step * (i - 0.5) + offset - left) * width / w, 0);
+			glVertex2d((step * (i - 0.5) + offset - left) * width / w, -5);
+		}
+		glVertex2d((step * i + offset - left) * width / w, 0);
+		glVertex2d((step * i + offset - left) * width / w, -10);
+		glEnd();
+		glPushMatrix();
+		glTranslated((step * i + offset - left) * width / w, -13, 0);
+		draw_text(step * i + offset, FONT_SCALE_SMALL, CENTER);
+		glPopMatrix();
+	}
+
+	// y scale division
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex2d(0, 0);
+	glVertex2d(0, height);
+	glEnd();
+	get_scaler_step(&step, &offset, bottom, top);
+	for (int i = 0; step *i + offset <= top; i++) {
+		glBegin(GL_LINES);
+		if (i != 0) {
+			glVertex2d(0, (step * (i - 0.5) + offset - bottom) * height / h);
+			glVertex2d(-10, (step * (i - 0.5) + offset - bottom) * height / h);
+		}
+		glVertex2d(0, (step * i + offset - bottom) * height / h);
+		glVertex2d(-10, (step * i + offset - bottom) * height / h);
+		glEnd();
+		glPushMatrix();
+		glTranslated(-15, (step * i + offset - bottom) * height / h, 0.0);
+		draw_text(step * i + offset, FONT_SCALE_SMALL, RIGHT);
+		glPopMatrix();
+	}
+
+	// Draw xy-axis name
+	glPushMatrix();
+	glTranslated(width / 2.0, - 26, 0);
+	draw_text(plotdat->xname, FONT_SCALE_SMALL, CENTER);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(-65, height / 2.0, 0);
+	glRotatef(90, 0, 0, 1);
+	draw_text(plotdat->yname, FONT_SCALE_SMALL, CENTER);
+	glPopMatrix();
+}
+
 
 
 
