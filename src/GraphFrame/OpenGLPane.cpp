@@ -25,9 +25,12 @@ EVT_KEY_DOWN(OpenGLPane::keyPressed)
 EVT_KEY_UP(OpenGLPane::keyReleased)
 EVT_MOUSEWHEEL(OpenGLPane::mouseWheelMoved)
 EVT_PAINT(OpenGLPane::render)
+EVT_IDLE(OpenGLPane::OnIdle)
 END_EVENT_TABLE()
 
 
+bool showUpdatedDataFlag;
+bool zoomedFlag;
 bool selectRegionFlag;
 bool showHorizontalScrollbarFlag;
 bool selectHorizontalScrollbarFlag;
@@ -56,7 +59,9 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 	topSpaceHeight = 20;
 	bottomSpaceHeight = 50;
 
+	showUpdatedDataFlag = true;
 	selectRegionFlag = false;
+	zoomedFlag = false;
 	mouseDownPtX = 0;
 	mouseCurrentPtX = 0;
 	mouseReleasedPtX = 0;
@@ -88,7 +93,6 @@ bool OpenGLPane::AddPlotData(MeasureData *dat)
 
 	return true;
 }
-
 
 int OpenGLPane::GetGraphWidth()
 {
@@ -129,6 +133,13 @@ bool OpenGLPane::IsXAxisArea(int x, int y)
 {
 	return x > leftSpaceWidth && x < canvasWidth - rightSpaceWidth && y < bottomSpaceHeight;
 }
+
+bool OpenGLPane::IsRightSpace(int x)
+{
+	return x >= canvasWidth - rightSpaceWidth;
+}
+
+
 
 //---------------------------------------------------------------------------
 // OpenGLPane Draw Procedure
@@ -270,7 +281,10 @@ void OpenGLPane::mouseMoved(wxMouseEvent& event)
 		Refresh();
 	}
 	else if (selectHorizontalScrollbarFlag) {
-		plotobj->MovePlotAreaX((float)(mouseCurrentPtX - mouseDownPtX) / (float)(GetGraphWidth()));
+		if(plotobj->MovePlotAreaX((float)(mouseCurrentPtX - mouseDownPtX) / (float)(GetGraphWidth())))
+			showUpdatedDataFlag = true;
+		else
+			showUpdatedDataFlag = false;
 		mouseDownPtX = mouseCurrentPtX;
 		Refresh();
 	}
@@ -279,8 +293,10 @@ void OpenGLPane::mouseMoved(wxMouseEvent& event)
 		Refresh();
 	}
 	else {
-		showHorizontalScrollbarFlag = false;
-		Refresh();
+		if (showHorizontalScrollbarFlag) {
+			showHorizontalScrollbarFlag = false;
+			Refresh();
+		}
 	}
 
 }
@@ -309,12 +325,15 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 		const wxPoint pt = wxGetMousePosition();
 		mouseReleasedPtX = pt.x - this->GetScreenPosition().x;
 
+		showUpdatedDataFlag = false;
+
 		if (mouseReleasedPtX <= leftSpaceWidth) {
 			mouseReleasedPtX = leftSpaceWidth;
 		}
 		else if (mouseReleasedPtX >= canvasWidth - rightSpaceWidth)
 		{
 			mouseReleasedPtX = canvasWidth - rightSpaceWidth;
+			showUpdatedDataFlag = true;
 		}
 		
 		if (mouseReleasedPtX < mouseDownPtX) {
@@ -330,6 +349,7 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 		plotobj->SetPlotAreaX(l, r);
 
 		selectRegionFlag = false;
+		zoomedFlag = true;
 		Refresh();
 	}
 	else if (selectHorizontalScrollbarFlag) {
@@ -341,6 +361,8 @@ void OpenGLPane::mouseReleased(wxMouseEvent& event)
 void OpenGLPane::rightClick(wxMouseEvent& event)
 {
 	plotobj->AutoScale();
+	zoomedFlag = false;
+	showUpdatedDataFlag = true;
 	Refresh();
 }
 
@@ -354,6 +376,17 @@ void OpenGLPane::mouseLeftWindow(wxMouseEvent& event)
 void OpenGLPane::keyPressed(wxKeyEvent& event) {}
 void OpenGLPane::keyReleased(wxKeyEvent& event) {}
 
+void OpenGLPane::OnIdle(wxIdleEvent& event)
+{
+	if (!selectRegionFlag) {
+		if (showUpdatedDataFlag && plotobj->IsDataUpdate()) {
+			if (!zoomedFlag)
+				plotobj->AutoScale();
+			Refresh();
+		}
+	}
+}
+
 
 //---------------------------------------------------------------------------
 // PlotObject
@@ -361,6 +394,23 @@ void OpenGLPane::keyReleased(wxKeyEvent& event) {}
 
 PlotObject::PlotObject(MeasureData* dat) {
 	plotdat = dat;
+	previousNum = plotdat->num;
+	showAllPlotAreaFlag = true;
+}
+
+bool PlotObject::IsDataUpdate()
+{
+	int num = plotdat->num;
+	if (previousNum == num) 
+		return false;
+
+	if (!showAllPlotAreaFlag) {
+		left += plotdat->xdelta * (num - previousNum);
+		right += plotdat->xdelta * (num - previousNum);
+	}
+	
+	previousNum = num;
+	return true;
 }
 
 void PlotObject::SetPlotAreaX(float l, float r)
@@ -370,9 +420,12 @@ void PlotObject::SetPlotAreaX(float l, float r)
 		left = l;
 		right = r;
 	}
+	if (left != plotdat->xmin && right != plotdat->xmax)
+		showAllPlotAreaFlag = false;
 }
 
-void PlotObject::MovePlotAreaX(float x)
+// Return true if right value of plot area reaches xmax
+bool PlotObject::MovePlotAreaX(float x)
 {
 	float move = (plotdat->xmax - plotdat->xmin) * x;
 
@@ -390,12 +443,14 @@ void PlotObject::MovePlotAreaX(float x)
 		if (right + move > plotdat->xmax) {
 			left = left + plotdat->xmax - right;
 			right = plotdat->xmax;
+			return true;
 		}
 		else {
 			right = right + move;
 			left = left + move;
 		}
 	}
+	return false;
 }
 
 void PlotObject::AutoScale()
@@ -411,6 +466,7 @@ void PlotObject::AutoScale()
 		if (top < plotdat->ydat[i])
 			top = plotdat->ydat[i];
 	}
+	showAllPlotAreaFlag = true;
 }
 
 float PlotObject::GetLeft()

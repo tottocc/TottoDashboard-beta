@@ -10,8 +10,8 @@ using namespace std;
 
 
 
-//#define SAMPLING_NUM_MAX 8640000
-#define SAMPLING_NUM_MAX 100000
+#define SAMPLING_NUM_MAX 8640000
+//#define SAMPLING_NUM_MAX 100000
 //#define SAMPLING_NUM_MAX 1000
 
 
@@ -27,7 +27,7 @@ public:
 		for (int x = 0; x < SAMPLING_NUM_MAX; x++) {
 //			ydat[x] = (rand() % 11) * 0.1;
 			ydat[x] =(x % 1000) / 100 * 100;
-			num++;
+//			num++;
 		}
 		xmin = 0;
 		xmax = xdelta * (num-1);
@@ -41,6 +41,17 @@ public:
 	};
 	~MeasureData() {
 	};
+
+	bool AddSample(float y) {
+
+		if (num == SAMPLING_NUM_MAX)
+			return false;
+
+		// ydat[num] = dat;
+		num++;
+		xmax += xdelta;
+		return true;
+	}
 
 	int num;
 	float xdelta;

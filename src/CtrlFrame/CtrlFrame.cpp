@@ -24,24 +24,48 @@ using namespace std;
 #define msleep(X) usleep((X) * 1000)
 #endif
 
+wxBEGIN_EVENT_TABLE(GraphFrame, wxFrame)
+EVT_MENU(wxID_EXIT, GraphFrame::OnExit)
+wxEND_EVENT_TABLE()
+
+
+BEGIN_EVENT_TABLE(CtrlFrame, wxFrame)
+EVT_IDLE(CtrlFrame::OnIdle)
+END_EVENT_TABLE()
+
+
 CtrlFrame::CtrlFrame(wxWindow* parent)
 	:
 	MainFrame(parent)
 {
-	// set the frame icon
+	// Set the frame icon
 	SetIcon(wxICON(tottoIcon));
+
+	// Set window position
+	SetPosition(wxPoint(30, 30));
 
 	// Connect Events
 	m_comboBoxCom->Connect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(CtrlFrame::comboBoxComDropDown), NULL, this);
 
 	// Update com port list
 	UpdateChoiceComList();
+
+	// For sampling data
+	mdata = new MeasureData();
+
+	// Create the Graph frame window
+	gframe = new GraphFrame(NULL, mdata);
+	gframe->SetTitle(wxT("Totto Dashboard"));
+	gframe->Show(true);
 }
 
 CtrlFrame::~CtrlFrame()
 {
 	// Disconnect Events
 	m_comboBoxCom->Disconnect(wxEVT_COMBOBOX_DROPDOWN, wxCommandEventHandler(CtrlFrame::comboBoxComDropDown), NULL, this);
+	// Need to confirm frame is still live or not belore delete it
+	//
+	// delete gframe;
 }
 
 void CtrlFrame::UpdateChoiceComList()
@@ -138,4 +162,9 @@ void CtrlFrame::btn3Click(wxCommandEvent& event)
 		_tottoCmd.CtrlPort(3, false);
 		m_button3->SetBackgroundColour(OFF_STATE_COLOUR);
 	}
+}
+
+void CtrlFrame::OnIdle(wxIdleEvent& event)
+{
+	mdata->AddSample(0.0);
 }

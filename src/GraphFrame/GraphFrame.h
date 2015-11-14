@@ -17,9 +17,10 @@ class GraphFrame : public MyFrame
 
 		virtual ~GraphFrame();
 
-	private:
 		void OnExit(wxCommandEvent& event);
 		wxDECLARE_EVENT_TABLE();
+
+	private:
 		MeasureData *bdata;
 };
 

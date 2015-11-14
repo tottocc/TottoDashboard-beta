@@ -26,8 +26,11 @@ class PlotObject
 public:
 	PlotObject(MeasureData* dat);
 
+	bool IsDataUpdate();
+
 	void SetPlotAreaX(float l, float r);
-	void MovePlotAreaX(float x);
+	bool MovePlotAreaX(float x);   // Return true if right value of plot area reaches xmax
+	void UpatePlotArea();
 	void AutoScale();
 
 	float GetLeft();
@@ -42,12 +45,15 @@ public:
 	void DrawYname(float scale);
 	
 private:
+	MeasureData *plotdat;
+	int previousNum;
+
 	float left;
 	float right;
 	float bottom;
 	float top;
 
-	MeasureData *plotdat;
+	bool showAllPlotAreaFlag;
 };
 
 
@@ -63,12 +69,13 @@ public:
 
 	void resized(wxSizeEvent& evt);
 
-	int GetGraphWidth();
+	int GetGraphWidth();	
 	int GetGraphHeight();
 	void UpdateCanvasWidth();
 	void UpdateCanvasHeight();
 	bool IsGraphArea(int x, int y);
 	bool IsXAxisArea(int x, int y);
+	bool IsRightSpace(int x);
 
 	// draw
 	void Prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
@@ -84,6 +91,7 @@ public:
 	void keyPressed(wxKeyEvent& event);
 	void keyReleased(wxKeyEvent& event);
 
+	void OnIdle(wxIdleEvent& event);
 	DECLARE_EVENT_TABLE();
 
 private:
