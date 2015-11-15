@@ -2,6 +2,7 @@
 #define __OPENGLPANE__
 
 #include <wx/glcanvas.h>
+#include <wx/timer.h>
 #include "../MeasureData.h"
 
 // we need OpenGL headers for GLfloat/GLint types used below
@@ -91,6 +92,7 @@ public:
 	void keyPressed(wxKeyEvent& event);
 	void keyReleased(wxKeyEvent& event);
 
+	void OnTimer(wxTimerEvent& event);
 	void OnIdle(wxIdleEvent& event);
 	DECLARE_EVENT_TABLE();
 
@@ -104,6 +106,8 @@ private:
 	int rightSpaceWidth;
 	int topSpaceHeight;
 	int bottomSpaceHeight;
+
+	wxTimer m_timer;
 };
 
 

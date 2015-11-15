@@ -14,6 +14,12 @@ using namespace std;
     #include "../res/tottoIcon.xpm"
 #endif
 
+#if !wxUSE_THREADS
+#error "This sample requires thread support!"
+#endif // wxUSE_THREADS
+
+#include <wx/thread.h>
+
 #define ON_STATE_COLOUR  wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)
 #define OFF_STATE_COLOUR wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE)
 
@@ -28,81 +34,101 @@ wxBEGIN_EVENT_TABLE(GraphFrame, wxFrame)
 EVT_MENU(wxID_EXIT, GraphFrame::OnExit)
 wxEND_EVENT_TABLE()
 
+
 BEGIN_EVENT_TABLE(CtrlFrame, wxFrame)
 EVT_IDLE(CtrlFrame::OnIdle)
 END_EVENT_TABLE()
 
+// ----------------------------------------------------------------------------
+// constants
+// ----------------------------------------------------------------------------
+
+// ID for the menu commands
+enum
+{
+	THREAD_QUIT = wxID_EXIT,
+	THREAD_ABOUT = wxID_ABOUT,
+	THREAD_TEXT = 101,
+	THREAD_CLEAR,
+	THREAD_START_THREAD = 201,
+	THREAD_START_THREADS,
+	THREAD_STOP_THREAD,
+	THREAD_PAUSE_THREAD,
+	THREAD_RESUME_THREAD,
+
+	THREAD_START_WORKER,
+	THREAD_EXEC_MAIN,
+	THREAD_START_GUI_THREAD,
+
+	THREAD_SHOWCPUS,
+
+	WORKER_EVENT = wxID_HIGHEST + 1,   // this one gets sent from MyWorkerThread
+	GUITHREAD_EVENT                  // this one gets sent from MyGUIThread
+};
+
+
 
 // ----------------------------------------------------------------------------
-// thread to make dummy data
+// a worker thread
 // ----------------------------------------------------------------------------
-class MyThread : public wxThread
+
+class MyWorkerThread : public wxThread
 {
 public:
-	MyThread(CtrlFrame *frame, MeasureData *dat);
-	virtual ~MyThread();
+	MyWorkerThread(CtrlFrame *frame);
 
-	virtual void *Entry(); // thread execution starts here
+	// thread execution starts here
+	virtual void *Entry();
+
+	// called when the thread exits - whether it terminates normally or is
+	// stopped with Delete() (but not when it is Kill()ed!)
+	virtual void OnExit();
 
 public:
 	CtrlFrame *m_frame;
-	MeasureData *m_data;
+	unsigned m_count;
 };
 
-MyThread::MyThread(CtrlFrame *frame, MeasureData *dat)
+MyWorkerThread::MyWorkerThread(CtrlFrame *frame)
 	: wxThread()
 {
 	m_frame = frame;
-	m_data  = dat;
+	m_count = 0;
 }
 
-MyThread::~MyThread()
+void MyWorkerThread::OnExit()
 {
-	wxCriticalSectionLocker locker(m_frame->m_critsect);
-
-	wxArrayThread& threads = m_frame->m_threads;
-	threads.Remove(this);
-
-	if (threads.IsEmpty())
-	{
-		// signal the main thread that there are no more threads left if it is
-		// waiting for us
-		if (m_frame->m_shuttingDown)
-		{
-			m_frame->m_shuttingDown = false;
-
-			m_frame->m_semAllDone.Post();
-		}
-	}
 }
 
-wxThread::ExitCode MyThread::Entry()
+wxThread::ExitCode MyWorkerThread::Entry()
 {
-	while (true)
+	for (m_count = 0; !m_frame->Cancelled() && (m_count < 100); m_count++)
 	{
-		// check if the application is shutting down: in this case all threads
-		// should stop a.s.a.p.
-		{
-			wxCriticalSectionLocker locker(m_frame->m_critsect);
-			if (m_frame->m_shuttingDown)
-				return NULL;
-		}
-
-		// check if just this thread was asked to exit
+		// check if we were asked to exit
 		if (TestDestroy())
 			break;
 
-		if (!m_data->AddSample(0.0))
-			return NULL;
+		// create any type of command event here
+		wxThreadEvent event(wxEVT_THREAD, WORKER_EVENT);
+		event.SetInt(m_count);
 
-		wxThread::Sleep(10);   // Call this in the thread instead of wxSleep()
+		// send in a thread-safe way
+		wxQueueEvent(m_frame, event.Clone());
+
+		wxMilliSleep(200);
 	}
+
+	wxThreadEvent event(wxEVT_THREAD, WORKER_EVENT);
+	event.SetInt(-1); // that's all
+	wxQueueEvent(m_frame, event.Clone());
+
+	return NULL;
 }
 
+// ----------------------------------------------------------------------------
+// CtrlFrame class
+// ----------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------
-// CtrlFrame
-// ----------------------------------------------------------------------------
 CtrlFrame::CtrlFrame(wxWindow* parent)
 	:
 	MainFrame(parent)
@@ -126,23 +152,6 @@ CtrlFrame::CtrlFrame(wxWindow* parent)
 	gframe = new GraphFrame(NULL, mdata);
 	gframe->SetTitle(wxT("Totto Dashboard"));
 	gframe->Show(true);
-
-	// Create thread to make dummy data
-	m_shuttingDown = false;
-	MyThread *thread = new MyThread(this, mdata);
-
-	if (thread->Create() != wxTHREAD_NO_ERROR)
-	{
-		wxLogError(wxT("Can't create thread!"));
-	}
-
-	wxCriticalSectionLocker enter(this->m_critsect);
-	this->m_threads.Add(thread);
-
-	if (thread->Run() != wxTHREAD_NO_ERROR)
-	{
-		wxLogError(wxT("Can't start thread!"));
-	}
 }
 
 CtrlFrame::~CtrlFrame()
@@ -152,52 +161,6 @@ CtrlFrame::~CtrlFrame()
 	// Need to confirm frame is still live or not belore delete it
 	//
 	// delete gframe;
-
-	// tell all the threads to terminate: note that they can't terminate while
-	// we're deleting them because they will block in their OnExit() -- this is
-	// important as otherwise we might access invalid array elements
-	{
-		wxCriticalSectionLocker locker(this->m_critsect);
-
-		// check if we have any threads running first
-		const wxArrayThread& threads = this->m_threads;
-		size_t count = threads.GetCount();
-
-		if (!count)
-			return;
-
-		// set the flag indicating that all threads should exit
-		this->m_shuttingDown = true;
-	}
-
-	// now wait for them to really terminate
-	this->m_semAllDone.Wait();
-
-	/*
-	// sample to delte one thread
-	wxThread* toDelete = NULL;
-	{
-	wxCriticalSectionLocker enter(this->m_critsect);
-
-	// stop the last thread
-	if (this->m_threads.IsEmpty())
-	{
-	wxLogError(wxT("No thread to stop!"));
-	}
-	else
-	{
-	toDelete = this->m_threads.Last();
-	}
-	}
-
-	if (toDelete)
-	{
-	// This can still crash if the thread gets to delete itself
-	// in the mean time.
-	toDelete->Delete();
-
-	}
-	*/
 }
 
 void CtrlFrame::UpdateChoiceComList()
@@ -217,6 +180,12 @@ void CtrlFrame::UpdateChoiceComList()
 	}
 }
 
+bool CtrlFrame::Cancelled()
+{
+	wxCriticalSectionLocker lock(m_csCancelled);
+
+	return m_cancelled;
+}
 
 //
 // Event handlers
@@ -299,4 +268,5 @@ void CtrlFrame::btn3Click(wxCommandEvent& event)
 
 void CtrlFrame::OnIdle(wxIdleEvent& event)
 {
+	mdata->AddSample(0.0);
 }

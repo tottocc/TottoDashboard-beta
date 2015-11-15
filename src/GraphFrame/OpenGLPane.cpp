@@ -13,6 +13,10 @@
 
 #include "DrawText.h"
 
+enum
+{
+	TIMER_ID = 10
+};
 
 BEGIN_EVENT_TABLE(OpenGLPane, wxGLCanvas)
 EVT_MOTION(OpenGLPane::mouseMoved)
@@ -25,6 +29,7 @@ EVT_KEY_DOWN(OpenGLPane::keyPressed)
 EVT_KEY_UP(OpenGLPane::keyReleased)
 EVT_MOUSEWHEEL(OpenGLPane::mouseWheelMoved)
 EVT_PAINT(OpenGLPane::render)
+EVT_TIMER(TIMER_ID, OpenGLPane::OnTimer)
 EVT_IDLE(OpenGLPane::OnIdle)
 END_EVENT_TABLE()
 
@@ -48,6 +53,7 @@ int mouseReleasedPtY;
 
 OpenGLPane::OpenGLPane(wxFrame* parent, int* args) :
 wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
+, m_timer(this, TIMER_ID)
 {
 	m_context = new wxGLContext(this);
 
@@ -72,6 +78,9 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 	// Initialize font
 	if (!init_font())
 		fprintf(stderr, "Fail to initialize font datar\n");
+
+	// 1 msec interval timer to update graph
+	m_timer.Start(1);
 
 	// To avoid flashing on MSW
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
@@ -376,7 +385,7 @@ void OpenGLPane::mouseLeftWindow(wxMouseEvent& event)
 void OpenGLPane::keyPressed(wxKeyEvent& event) {}
 void OpenGLPane::keyReleased(wxKeyEvent& event) {}
 
-void OpenGLPane::OnIdle(wxIdleEvent& event)
+void OpenGLPane::OnTimer(wxTimerEvent& event)
 {
 	if (!selectRegionFlag) {
 		if (showUpdatedDataFlag && plotobj->IsDataUpdate()) {
@@ -385,6 +394,11 @@ void OpenGLPane::OnIdle(wxIdleEvent& event)
 			Refresh();
 		}
 	}
+
+}
+
+void OpenGLPane::OnIdle(wxIdleEvent& event)
+{
 }
 
 
@@ -595,11 +609,11 @@ void PlotObject::DrawAxis(int width, int height)
 	glVertex2d(width, 0);
 	glEnd();
 	get_scaler_step(&step, &offset, left, right);
-	for (int i = 0; step *i + offset <= right; i++) {
+	for (int i = 0; step * i + offset <= right; i++) {
 		glBegin(GL_LINES);
-		if (i != 0) {
-			glVertex2d((step * (i - 0.5) + offset - left) * width / w, 0);
-			glVertex2d((step * (i - 0.5) + offset - left) * width / w, -5);
+		if (step * (i + 0.5) + offset <= right) {
+			glVertex2d((step * (i + 0.5) + offset - left) * width / w, 0);
+			glVertex2d((step * (i + 0.5) + offset - left) * width / w, -5);
 		}
 		glVertex2d((step * i + offset - left) * width / w, 0);
 		glVertex2d((step * i + offset - left) * width / w, -10);
@@ -609,6 +623,7 @@ void PlotObject::DrawAxis(int width, int height)
 		draw_text(step * i + offset, FONT_SCALE_SMALL, CENTER);
 		glPopMatrix();
 	}
+
 
 	// y scale division
 	glColor3d(0.0, 0.0, 0.0);

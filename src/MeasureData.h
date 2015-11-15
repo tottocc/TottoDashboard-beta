@@ -27,8 +27,10 @@ public:
 		for (int x = 0; x < SAMPLING_NUM_MAX; x++) {
 //			ydat[x] = (rand() % 11) * 0.1;
 			ydat[x] =(x % 1000) / 100 * 100;
-//			num++;
+			num++;
 		}
+		num = 0;
+
 		xmin = 0;
 		xmax = xdelta * (num-1);
 
