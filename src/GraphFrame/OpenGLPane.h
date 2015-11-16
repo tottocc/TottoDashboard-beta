@@ -33,6 +33,7 @@ public:
 	bool MovePlotAreaX(float x);   // Return true if right value of plot area reaches xmax
 	void UpatePlotArea();
 	void AutoScale();
+	void AutoScaleY();
 
 	float GetLeft();
 	float GetRight();
@@ -76,6 +77,7 @@ public:
 	void UpdateCanvasHeight();
 	bool IsGraphArea(int x, int y);
 	bool IsXAxisArea(int x, int y);
+	bool IsHorizontalScrollbarArea(int x, int y);
 	bool IsRightSpace(int x);
 
 	// draw
@@ -97,6 +99,8 @@ public:
 	DECLARE_EVENT_TABLE();
 
 private:
+	void ZoomIn();
+
 	PlotObject *plotobj;
 
 	int canvasWidth;

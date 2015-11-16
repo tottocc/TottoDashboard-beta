@@ -34,7 +34,7 @@ EVT_IDLE(OpenGLPane::OnIdle)
 END_EVENT_TABLE()
 
 
-bool showUpdatedDataFlag;
+bool realtimeUpdateFlag;
 bool zoomedFlag;
 bool selectRegionFlag;
 bool showHorizontalScrollbarFlag;
@@ -65,7 +65,7 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 	topSpaceHeight = 20;
 	bottomSpaceHeight = 50;
 
-	showUpdatedDataFlag = true;
+	realtimeUpdateFlag = true;
 	selectRegionFlag = false;
 	zoomedFlag = false;
 	mouseDownPtX = 0;
@@ -142,6 +142,12 @@ bool OpenGLPane::IsXAxisArea(int x, int y)
 {
 	return x > leftSpaceWidth && x < canvasWidth - rightSpaceWidth && y < bottomSpaceHeight;
 }
+
+bool OpenGLPane::IsHorizontalScrollbarArea(int x, int y)
+{
+	return x > leftSpaceWidth && x < canvasWidth - rightSpaceWidth && y < bottomSpaceHeight && y > bottomSpaceHeight - 15;
+}
+
 
 bool OpenGLPane::IsRightSpace(int x)
 {
@@ -278,10 +284,10 @@ void OpenGLPane::mouseMoved(wxMouseEvent& event)
 	int mouseCurrentPtY = canvasHeight - (pt.y - this->GetScreenPosition().y);
 
 	if (selectRegionFlag) {
-		if (mouseReleasedPtX < leftSpaceWidth) {
+		if (mouseCurrentPtX < leftSpaceWidth) {
 			mouseReleasedPtX = leftSpaceWidth;
 		}
-		else if (mouseReleasedPtX > canvasWidth - rightSpaceWidth)
+		else if (mouseCurrentPtX > canvasWidth - rightSpaceWidth)
 		{
 			mouseReleasedPtX = canvasWidth - rightSpaceWidth;
 		} else {
@@ -291,13 +297,13 @@ void OpenGLPane::mouseMoved(wxMouseEvent& event)
 	}
 	else if (selectHorizontalScrollbarFlag) {
 		if(plotobj->MovePlotAreaX((float)(mouseCurrentPtX - mouseDownPtX) / (float)(GetGraphWidth())))
-			showUpdatedDataFlag = true;
+			realtimeUpdateFlag = true;
 		else
-			showUpdatedDataFlag = false;
+			realtimeUpdateFlag = false;
 		mouseDownPtX = mouseCurrentPtX;
 		Refresh();
 	}
-	else if (IsXAxisArea(mouseCurrentPtX, mouseCurrentPtY)) {
+	else if (IsHorizontalScrollbarArea(mouseCurrentPtX, mouseCurrentPtY)) {
 		showHorizontalScrollbarFlag = true;
 		Refresh();
 	}
@@ -331,34 +337,9 @@ void OpenGLPane::mouseDown(wxMouseEvent& event) {
 void OpenGLPane::mouseReleased(wxMouseEvent& event)
 {
 	if (selectRegionFlag) {
-		const wxPoint pt = wxGetMousePosition();
-		mouseReleasedPtX = pt.x - this->GetScreenPosition().x;
-
-		showUpdatedDataFlag = false;
-
-		if (mouseReleasedPtX <= leftSpaceWidth) {
-			mouseReleasedPtX = leftSpaceWidth;
-		}
-		else if (mouseReleasedPtX >= canvasWidth - rightSpaceWidth)
-		{
-			mouseReleasedPtX = canvasWidth - rightSpaceWidth;
-			showUpdatedDataFlag = true;
-		}
-		
-		if (mouseReleasedPtX < mouseDownPtX) {
-			int temp = mouseReleasedPtX;
-			mouseReleasedPtX = mouseDownPtX;
-			mouseDownPtX = temp;
-		}
-
-		float l = (mouseDownPtX - leftSpaceWidth) / (float)(GetGraphWidth())
-			* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
-		float r = (mouseReleasedPtX - leftSpaceWidth) / (float)(GetGraphWidth())
-			* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
-		plotobj->SetPlotAreaX(l, r);
-
 		selectRegionFlag = false;
-		zoomedFlag = true;
+
+		ZoomIn();
 		Refresh();
 	}
 	else if (selectHorizontalScrollbarFlag) {
@@ -371,15 +352,45 @@ void OpenGLPane::rightClick(wxMouseEvent& event)
 {
 	plotobj->AutoScale();
 	zoomedFlag = false;
-	showUpdatedDataFlag = true;
+	realtimeUpdateFlag = true;
 	Refresh();
 }
 
 void OpenGLPane::mouseLeftWindow(wxMouseEvent& event) 
 {
+	if (selectRegionFlag) {
+		selectRegionFlag = false;
+		ZoomIn();
+		Refresh();
+	}
 	showHorizontalScrollbarFlag = false;
 	selectHorizontalScrollbarFlag = false;
 	Refresh();
+}
+
+void OpenGLPane::ZoomIn()
+{
+	realtimeUpdateFlag = false;
+
+	if (mouseReleasedPtX >= canvasWidth - rightSpaceWidth)
+	{
+		mouseReleasedPtX = canvasWidth - rightSpaceWidth;
+		realtimeUpdateFlag = true;
+	}
+
+	if (mouseReleasedPtX < mouseDownPtX) {
+		int temp = mouseReleasedPtX;
+		mouseReleasedPtX = mouseDownPtX;
+		mouseDownPtX = temp;
+	}
+
+	float l = (mouseDownPtX - leftSpaceWidth) / (float)(GetGraphWidth())
+		* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
+	float r = (mouseReleasedPtX - leftSpaceWidth) / (float)(GetGraphWidth())
+		* (plotobj->GetRight() - plotobj->GetLeft()) + plotobj->GetLeft();
+	plotobj->SetPlotAreaX(l, r);
+
+	zoomedFlag = true;
 }
 
 void OpenGLPane::keyPressed(wxKeyEvent& event) {}
@@ -388,11 +399,15 @@ void OpenGLPane::keyReleased(wxKeyEvent& event) {}
 void OpenGLPane::OnTimer(wxTimerEvent& event)
 {
 	if (!selectRegionFlag) {
-		if (showUpdatedDataFlag && plotobj->IsDataUpdate()) {
+		if (realtimeUpdateFlag && plotobj->IsDataUpdate()) {
 			if (!zoomedFlag)
 				plotobj->AutoScale();
+			else
+				plotobj->AutoScaleY();
 			Refresh();
 		}
+		else if (showHorizontalScrollbarFlag)
+			Refresh();
 	}
 
 }
@@ -400,7 +415,6 @@ void OpenGLPane::OnTimer(wxTimerEvent& event)
 void OpenGLPane::OnIdle(wxIdleEvent& event)
 {
 }
-
 
 //---------------------------------------------------------------------------
 // PlotObject
@@ -481,6 +495,22 @@ void PlotObject::AutoScale()
 			top = plotdat->ydat[i];
 	}
 	showAllPlotAreaFlag = true;
+}
+
+void PlotObject::AutoScaleY()
+{
+	bottom = 0.0;
+	float max = 0.0;	
+	int i = left / plotdat->xdelta;
+	float x = left;
+	while (x <= right) {
+		if (max < plotdat->ydat[i])
+			max = plotdat->ydat[i];
+		x += plotdat->xdelta;
+		i++;
+	}
+	if (max > top)
+		top = max;
 }
 
 float PlotObject::GetLeft()
@@ -624,7 +654,6 @@ void PlotObject::DrawAxis(int width, int height)
 		glPopMatrix();
 	}
 
-
 	// y scale division
 	glColor3d(0.0, 0.0, 0.0);
 	glBegin(GL_LINES);
@@ -634,27 +663,27 @@ void PlotObject::DrawAxis(int width, int height)
 	get_scaler_step(&step, &offset, bottom, top);
 	for (int i = 0; step *i + offset <= top; i++) {
 		glBegin(GL_LINES);
-		if (i != 0) {
-			glVertex2d(0, (step * (i - 0.5) + offset - bottom) * height / h);
-			glVertex2d(-10, (step * (i - 0.5) + offset - bottom) * height / h);
+		if (step * (i + 0.5) + offset <= top) {
+			glVertex2d(0, (step * (i + 0.5) + offset - bottom) * height / h);
+			glVertex2d(-5, (step * (i + 0.5) + offset - bottom) * height / h);
 		}
 		glVertex2d(0, (step * i + offset - bottom) * height / h);
 		glVertex2d(-10, (step * i + offset - bottom) * height / h);
 		glEnd();
 		glPushMatrix();
-		glTranslated(-15, (step * i + offset - bottom) * height / h, 0.0);
+		glTranslated(-15, (step * i + offset - bottom) * height / h + 6, 0);
 		draw_text(step * i + offset, FONT_SCALE_SMALL, RIGHT);
 		glPopMatrix();
 	}
 
 	// Draw xy-axis name
 	glPushMatrix();
-	glTranslated(width / 2.0, - 26, 0);
+	glTranslated(width / 2.0, - 34, 0);
 	draw_text(plotdat->xname, FONT_SCALE_SMALL, CENTER);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslated(-65, height / 2.0, 0);
+	glTranslated(-74, height / 2.0, 0);
 	glRotatef(90, 0, 0, 1);
 	draw_text(plotdat->yname, FONT_SCALE_SMALL, CENTER);
 	glPopMatrix();
