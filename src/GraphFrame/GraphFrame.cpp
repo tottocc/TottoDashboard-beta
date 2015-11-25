@@ -1,5 +1,11 @@
 #include "GraphFrame.h"
 
+#include "../CtrlFrame/CtrlForm.h"
+
+wxBEGIN_EVENT_TABLE(GraphFrame, wxFrame)
+EVT_MENU(wxID_EXIT, GraphFrame::OnExit)
+wxEND_EVENT_TABLE()
+
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -24,7 +30,6 @@ MyFrame(parent)
 
 	// Make a menubar
 	wxMenu *fileMenu = new wxMenu;
-
 	fileMenu->Append(wxID_EXIT, wxT("E&xit"));
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(fileMenu, wxT("&File"));
@@ -62,7 +67,6 @@ MyFrame(parent)
 
 GraphFrame::~GraphFrame()
 {
-	//delete m_canvas;
 }
 
 // Intercept menu commands

@@ -34,19 +34,6 @@ EVT_IDLE(OpenGLPane::OnIdle)
 END_EVENT_TABLE()
 
 
-bool realtimeUpdateFlag;
-bool zoomedFlag;
-bool selectRegionFlag;
-bool showHorizontalScrollbarFlag;
-bool selectHorizontalScrollbarFlag;
-int mouseDownPtX;
-int mouseDownPtY;
-int mouseCurrentPtX;
-int mouseCurrentPtY;
-int mouseReleasedPtX;
-int mouseReleasedPtY;
-
-
 //---------------------------------------------------------------------------
 // OpenGLPane
 //---------------------------------------------------------------------------
@@ -88,6 +75,7 @@ wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPA
 
 OpenGLPane::~OpenGLPane()
 {
+	delete_font();
 	delete m_context;
 	if (plotobj)
 		delete plotobj;

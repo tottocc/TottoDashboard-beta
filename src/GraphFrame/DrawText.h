@@ -12,6 +12,7 @@ enum drawPosition_t { CENTER, LEFT, RIGHT };
 #define FONT_SCALE_SMALL  0.6875 + 0.01
 
 bool init_font();
+bool delete_font();
 void draw_text(const char *p, float scale, drawPosition_t pos);
 void draw_text(string str, float scale, drawPosition_t pos);
 void draw_text(float f, float scale, drawPosition_t pos);

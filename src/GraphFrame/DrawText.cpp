@@ -7,6 +7,7 @@
 
 PrimitiveFontData *primitive_font_data_ter_u28n;
 PrimitiveFontData *primitive_font_data_ter_u22b;
+int numOfUsed = 0;
 
 
 static bool getHeaderKanji(const PrimitiveFontData *primitive_font_data,
@@ -161,41 +162,54 @@ static void drawKanjiLine(const PrimitiveFontData *primitive_font_data,
 
 bool init_font()
 {
-	const int margin = 1024;
-	primitive_font_data_ter_u28n = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u28n) + margin));
+	numOfUsed++;
+	if (numOfUsed == 1) {
 
-	uintptr_t tmp = reinterpret_cast<uintptr_t>(primitive_font_data_ter_u28n);
-	if (tmp & 0x3)
-	{
-		fprintf(stderr, "memory alignment error\n");
-		return false;
+		const int margin = 1024;
+		primitive_font_data_ter_u28n = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u28n) + margin));
+
+		uintptr_t tmp = reinterpret_cast<uintptr_t>(primitive_font_data_ter_u28n);
+		if (tmp & 0x3)
+		{
+			fprintf(stderr, "memory alignment error\n");
+			return false;
+		}
+
+		memcpy(primitive_font_data_ter_u28n, data_ter_u28n, sizeof(data_ter_u28n));
+
+		if (primitive_font_data_ter_u28n == 0)
+		{
+			fprintf(stderr, "memory allocation error\n");
+			return false;
+		}
+
+		primitive_font_data_ter_u22b = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u22b) + margin));
+
+		tmp = reinterpret_cast<uintptr_t>(primitive_font_data_ter_u22b);
+		if (tmp & 0x3)
+		{
+			fprintf(stderr, "memory alignment error\n");
+			return false;
+		}
+
+		memcpy(primitive_font_data_ter_u22b, data_ter_u22b, sizeof(data_ter_u22b));
+
+		if (primitive_font_data_ter_u22b == 0)
+		{
+			fprintf(stderr, "memory allocation error\n");
+			return false;
+		}
 	}
+	return true;
+}
 
-	memcpy(primitive_font_data_ter_u28n, data_ter_u28n, sizeof(data_ter_u28n));
-
-	if (primitive_font_data_ter_u28n == 0)
-	{
-		fprintf(stderr, "memory allocation error\n");
-		return false;
+bool delete_font()
+{
+	numOfUsed--;
+	if (numOfUsed == 0) {
+		free(primitive_font_data_ter_u28n);
+		free(primitive_font_data_ter_u22b);
 	}
-
-	primitive_font_data_ter_u22b = reinterpret_cast<PrimitiveFontData*>(malloc(sizeof(data_ter_u22b) + margin));
-
-	tmp = reinterpret_cast<uintptr_t>(primitive_font_data_ter_u22b);
-	if (tmp & 0x3)
-	{
-		fprintf(stderr, "memory alignment error\n");
-		return false;
-	}
-
-	memcpy(primitive_font_data_ter_u22b, data_ter_u22b, sizeof(data_ter_u22b));
-
-	if (primitive_font_data_ter_u22b == 0)
-	{
-		fprintf(stderr, "memory allocation error\n");
-		return false;
-	}
-
 	return true;
 }
 

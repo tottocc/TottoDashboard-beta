@@ -111,6 +111,18 @@ private:
 	int topSpaceHeight;
 	int bottomSpaceHeight;
 
+	bool realtimeUpdateFlag;
+	bool zoomedFlag;
+	bool selectRegionFlag;
+	bool showHorizontalScrollbarFlag;
+	bool selectHorizontalScrollbarFlag;
+	int mouseDownPtX;
+	int mouseDownPtY;
+	int mouseCurrentPtX;
+	int mouseCurrentPtY;
+	int mouseReleasedPtX;
+	int mouseReleasedPtY;
+
 	wxTimer m_timer;
 };
 
