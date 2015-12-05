@@ -37,10 +37,10 @@ protected:
 	unsigned int RecvLength();
 
 private:
-	serial_t _serial_obj;
-	unsigned int _comPortNum;
-	unsigned int _comPortNumList[COM_PORT_MAX];
-	char *_comPortDescList[COM_PORT_MAX];
+	serial_t serialObj;
+	unsigned int comPortNum;
+	unsigned int comPortNumList[COM_PORT_MAX];
+	char *comPortDescList[COM_PORT_MAX];
 };
 
 #endif /* _SERIAL_H_ */

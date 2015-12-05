@@ -29,7 +29,6 @@ using namespace std;
 /// local variable/function prototype
 ///////////////////////////////////////////////////////////////////////////////
 
-/* �֐��v���g�^�C�v */
 serial_t serial_create(char *pname, unsigned int baud);
 void serial_delete(serial_t obj);
 unsigned int serial_send(serial_t obj, const BYTE *buf, unsigned int size);
@@ -43,14 +42,14 @@ unsigned int serial_recv_length(serial_t obj);
 
 Serial::Serial()
 {
-	_serial_obj = NULL;
+	serialObj = NULL;
 }
 
 Serial::~Serial()
 {
-	for (int i = 0; i < _comPortNum; i++) {
-		free(_comPortDescList[i]);
-		_comPortDescList[i] = NULL;
+	for (int i = 0; i < comPortNum; i++) {
+		free(comPortDescList[i]);
+		comPortDescList[i] = NULL;
 	}
 
 	DisconnectCom();
@@ -69,11 +68,11 @@ unsigned int Serial::UpdateComPortList()
 	DeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
     // Initialize list
-	 for (i = 0; i < _comPortNum; i++) {
-		free(_comPortDescList[i]);
-		_comPortDescList[i] = NULL;
+	 for (i = 0; i < comPortNum; i++) {
+		free(comPortDescList[i]);
+		comPortDescList[i] = NULL;
 	}
-	_comPortNum = 0;
+	comPortNum = 0;
 
 	bRet =
 		SetupDiClassGuidsFromName(_T("PORTS"), (LPGUID)& ClassGuid, 1,
@@ -122,9 +121,9 @@ unsigned int Serial::UpdateComPortList()
 			}
 
 			if (_strnicmp(szPortName, "COM", 3) == 0) {  // Find COM port driver
-				_comPortNumList[_comPortNum] = atoi(&szPortName[3]);
-				_comPortDescList[_comPortNum] = _strdup(szFriendlyName);
-				_comPortNum++;
+				comPortNumList[comPortNum] = atoi(&szPortName[3]);
+				comPortDescList[comPortNum] = _strdup(szFriendlyName);
+				comPortNum++;
 			}
 		}
 	}
@@ -132,32 +131,32 @@ unsigned int Serial::UpdateComPortList()
 cleanup:
 	SetupDiDestroyDeviceInfoList(DeviceInfoSet);
 	
-	return _comPortNum;
+	return comPortNum;
 }
 
 unsigned int Serial::GetComPortNum(unsigned int num)
 {
-	if (num >= _comPortNum)
+	if (num >= comPortNum)
 		return 0;
-	return _comPortNumList[num];
+	return comPortNumList[num];
 }
 
 char *Serial::GetComPortDesc(unsigned int num)
 {
-	if (num >= _comPortNum)
+	if (num >= comPortNum)
 		return NULL;
-	return _comPortDescList[num];
+	return comPortDescList[num];
 }
 
 unsigned int Serial::FindComPortListIndexWithName(char *name)
 {
 	int i;
-	for (i = 0; i < _comPortNum; i++) {
-		if (strstr(_comPortDescList[i], name)) {
+	for (i = 0; i < comPortNum; i++) {
+		if (strstr(comPortDescList[i], name)) {
 			break;
 		}
 	}
-	if (i == _comPortNum)	
+	if (i == comPortNum)	
 		return 0;
 	return i;
 }
@@ -166,37 +165,37 @@ bool Serial::ConnectCom(unsigned int num, unsigned int baud)
 {
 	char comname[11];
 	sprintf(comname, "\\\\.\\COM%d", GetComPortNum(num));
-	_serial_obj = serial_create(comname, baud);
-	return _serial_obj != NULL;
+	serialObj = serial_create(comname, baud);
+	return serialObj != NULL;
 }
 
 bool Serial::IsOpen()
 {
-	return _serial_obj != NULL;
+	return serialObj != NULL;
 }
 
 
 void Serial::DisconnectCom()
 {
 	if (IsOpen()) {
-		serial_delete(_serial_obj);
-		_serial_obj = NULL;
+		serial_delete(serialObj);
+		serialObj = NULL;
 	}
 }
 
 unsigned int Serial::Send(const BYTE *buf, unsigned int size)
 {
-	return serial_send(_serial_obj, buf, size);
+	return serial_send(serialObj, buf, size);
 }
 
 unsigned int Serial::Recv(BYTE *buf, unsigned int size)
 {
-	return serial_recv(_serial_obj, buf, size);
+	return serial_recv(serialObj, buf, size);
 }
 
 unsigned int Serial::RecvLength()
 {
-	return serial_recv_length(_serial_obj);
+	return serial_recv_length(serialObj);
 }
 
 
@@ -204,32 +203,26 @@ unsigned int Serial::RecvLength()
 /// local function
 ///////////////////////////////////////////////////////////////////////////////
 
-/* 1�̃V���A���ʐM�Ɋւ����f�[�^�\�� */
 struct _TAG_SERIAL {
-	// �ʐM�֌W
-	HANDLE handle;
+
+    HANDLE handle;
 	DCB dcb;
 
-	// �X���b�h�Ɋւ���
 	HANDLE thread_handle;
 	DWORD thread_id;
 	BOOL thread_active;
 	CRITICAL_SECTION cs_send;
 	CRITICAL_SECTION cs_recv;
 
-	// FIFO
 	fifo_t *q_recv;
 	fifo_t *q_send;
 
-	// ���̑�
 	char *pname;
 	char *msg;
 };
 
-/* �v���g�^�C�v */
-DWORD WINAPI serial_thread(LPVOID param);
+DWORD WINAPI serialThread(LPVOID param);
 
-/* 1���o�b�t�@ */
 #define SERIAL_TMP_BUFSIZE	128
 
 serial_t serial_create(char *pname, unsigned int baud)
@@ -237,20 +230,17 @@ serial_t serial_create(char *pname, unsigned int baud)
 	serial_t obj;
 	COMMTIMEOUTS timeout;
 
-	// �C���X�^���X�������m��
 	obj = (serial_t)malloc(sizeof(struct _TAG_SERIAL));
 	if (obj == NULL) return NULL;
 	ZeroMemory(obj, sizeof(struct _TAG_SERIAL));
 	obj->pname = pname;
 
-	// COM�|�[�g�̃n���h�����擾
 	obj->handle = CreateFile(pname, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL/*|FILE_FLAG_OVERLAPPED*/, NULL);
 	if (obj->handle == INVALID_HANDLE_VALUE) {
 		free(obj);
 		return NULL;
 	}
 
-	// COM�|�[�g�̒ʐM�ݒ�
 	GetCommState(obj->handle, &obj->dcb);
 	obj->dcb.BaudRate = baud;
 	if (SetCommState(obj->handle, &obj->dcb) == FALSE) {
@@ -258,7 +248,6 @@ serial_t serial_create(char *pname, unsigned int baud)
 		return NULL;
 	}
 
-	// COM�|�[�g�̃^�C���A�E�g�ݒ�
 	ZeroMemory(&timeout, sizeof(COMMTIMEOUTS));
 	timeout.ReadIntervalTimeout = MAXDWORD;
 	if (SetCommTimeouts(obj->handle, &timeout) == FALSE) {
@@ -266,7 +255,6 @@ serial_t serial_create(char *pname, unsigned int baud)
 		return NULL;
 	}
 
-	// FIFO�������m��
 	obj->q_send = fifo_create();
 	obj->q_recv = fifo_create();
 	if (obj->q_send == NULL || obj->q_recv == NULL) {
@@ -276,11 +264,10 @@ serial_t serial_create(char *pname, unsigned int baud)
 		return NULL;
 	}
 
-	// �X���b�h�J�n
 	InitializeCriticalSection(&obj->cs_recv);
 	InitializeCriticalSection(&obj->cs_send);
 	obj->thread_active = TRUE;
-	obj->thread_handle = CreateThread(NULL, 0, serial_thread, (LPVOID *)obj, 0, &obj->thread_id);
+	obj->thread_handle = CreateThread(NULL, 0, serialThread, (LPVOID *)obj, 0, &obj->thread_id);
 	if (obj->thread_handle == NULL) {
 		DeleteCriticalSection(&obj->cs_recv);
 		DeleteCriticalSection(&obj->cs_send);
@@ -297,8 +284,7 @@ void serial_delete(serial_t obj)
 {
 	DWORD thread_state;
 
-	// �X���b�h�����~
-	obj->thread_active = FALSE;
+    obj->thread_active = FALSE;
 	do {
 		Sleep(1);
 		GetExitCodeThread(obj->thread_handle, &thread_state);
@@ -306,16 +292,14 @@ void serial_delete(serial_t obj)
 	DeleteCriticalSection(&obj->cs_send);
 	DeleteCriticalSection(&obj->cs_recv);
 
-	// �ʐM�|�[�g������
 	CloseHandle(obj->handle);
 
-	// �������[�̈��̉���
 	fifo_delete(obj->q_send);
 	fifo_delete(obj->q_recv);
 	free(obj);
 }
 
-DWORD WINAPI serial_thread(LPVOID param)
+DWORD WINAPI serialThread(LPVOID param)
 {
 	serial_t obj = (serial_t)param;
 	BYTE recv_buf[SERIAL_TMP_BUFSIZE];
@@ -343,7 +327,6 @@ DWORD WINAPI serial_thread(LPVOID param)
 			recv_hold = FALSE;
 		}
 
-		// ���M
 		if (send_hold) {
 			ret = WriteFile(obj->handle, send_buf, send_size, &send_len, NULL);
 			if (ret == FALSE) {
