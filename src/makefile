@@ -11,7 +11,7 @@ BINDIR = ../bin
 
 PROGRAM	= $(BINDIR)/TottoDashboard
 # Compile except source files for windows
-SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_win.cpp, $(wildcard serial/*.cpp)) $(wildcard GraphFrame/*.cpp)
+SOURCES = $(wildcard *.cpp) $(filter-out serial/Serial_win.cpp, $(wildcard serial/*.cpp)) $(wildcard GraphFrame/*.cpp) $(wildcard CtrlFrame/*.cpp)
 OBJECTS	= $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.o))
 DEPENDS = $(addprefix $(OBJDIR)/, $(SOURCES:.cpp=.d))
 
@@ -24,6 +24,7 @@ $(OBJDIR)/%.o: %.cpp
 	@[ -d $(OBJDIR) ] || mkdir -p $(OBJDIR)
 	@[ -d $(OBJDIR)/serial ] || mkdir -p $(OBJDIR)/serial
 	@[ -d $(OBJDIR)/GraphFrame ] || mkdir -p $(OBJDIR)/GraphFrame
+	@[ -d $(OBJDIR)/CtrlFrame ] || mkdir -p $(OBJDIR)/CtrlFrame
 	$(CXX) $(CFLAGS) -c $(WX-CONFIG_CXXFLAGS) -o $@ $<
 
 all: $(PROGRAM)

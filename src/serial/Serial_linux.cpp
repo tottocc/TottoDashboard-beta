@@ -43,8 +43,8 @@ Serial::~Serial()
 unsigned int Serial::UpdateComPortList()
 {
     // Describe OS specific method to find com port
-    
-    return comPortNum;
+
+    return 0;
 }
 
 unsigned int Serial::GetComPortNum(unsigned int num)
@@ -69,7 +69,7 @@ unsigned int Serial::FindComPortListIndexWithName(char *name)
 			break;
 		}
 	}
-	if (i == comPortNum)	
+	if (i == comPortNum)
 		return 0;
 	return i;
 }
@@ -79,18 +79,20 @@ bool Serial::ConnectCom(unsigned int num, unsigned int baud)
 	char comname[11];
 	sprintf(comname, "\\\\.\\COM%d", GetComPortNum(num));
 	serialObj = serial_create(comname, baud);
-	return serialObj != NULL;
+//	return (serialObj != NULL);
+  return true;
 }
 
-bool IsOpen()
+bool Serial::IsOpen()
 {
-	return serialObj != NULL;
+//	return serialObj != NULL;
+   return true;
 }
 
 void Serial::DisconnectCom()
 {
 	if (IsOpen()) {
-		serialDelete(serialObj);
+		serial_delete(serialObj);
 		serialObj = NULL;
 	}
 }

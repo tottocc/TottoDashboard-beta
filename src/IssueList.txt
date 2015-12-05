@@ -1,0 +1,5 @@
+Mac
+- Just one application can run
+      Fail to execute another application at the same time
+- No thread to open happened if too graph windows are opened
+- Start/Stop bottom color doesn't keep blue after pressing

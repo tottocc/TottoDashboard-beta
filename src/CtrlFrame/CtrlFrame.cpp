@@ -51,7 +51,7 @@ END_EVENT_TABLE()
 GraphDataArray::GraphDataArray()
 {
 	for (int i = 0; i < GRAPH_DATA_NUM_MAX; i++)
-	{	
+	{
 		mdata[i] = NULL;
 		wid[i] = 0;
 	}
@@ -366,7 +366,7 @@ void CtrlFrame::btnStartStopClick(wxCommandEvent& event)
 		m_buttonStartStop->SetBackgroundColour(OFF_STATE_COLOUR);
 		m_buttonStartStop->SetLabel(wxT("Start"));
 		currentOutputWindowId = 0;
-		
+
 		// sample to delte one thread
 		wxThread* toDelete = NULL;
 		{
@@ -413,7 +413,7 @@ void CtrlFrame::ChildWindowClose(wxWindowDestroyEvent& event)
 	{
 		// Stop click
 		m_buttonStartStop->SetBackgroundColour(OFF_STATE_COLOUR);
-		m_buttonStartStop->SetLabel(wxT("START"));
+		m_buttonStartStop->SetLabel(wxT("Start"));
 
 		// sample to delte one thread
 		wxThread* toDelete = NULL;
